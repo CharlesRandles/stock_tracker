@@ -5,8 +5,43 @@ Utilities for retrieving stock data from Yahoo
 See https://code.google.com/p/yahoo-finance-managed/wiki/csvQuotesDownload
 """
 
-import unittest
+class Quote(object):
+    def __init__(self, symbol):
+        self.symbol = symbol
 
+import urllib2
+"""
+Class to retrieve a set of quotes from Yahoo and parse them into Quote objects
+"""
+class YahooQuotes(object):
+    def __init__(self, symbols):
+        self.quotes = []
+        self.buildQuotes(symbols)
+
+    #Get the data, parse it and build the quote list
+    def buildQuotes(self, symbols):
+        rawQuotes = self.get(symbols).split("\r\n")
+        for line in rawQuotes:
+            data = line.split(',')
+            print data
+            quote = Quote(data[1].strip('"'))
+            quote.name = data[0].strip('"')
+            quote.offer = float(data[3])
+            quote.bid = float(data[2])
+            quote.peak = float(data[4])
+            self.quotes.append(quote)
+            
+    #Retrieve .csv data from Yahoo!
+    def get(self, symbols):
+        url = YahooCSVURL(symbols).url
+        response = urllib2.urlopen(url)
+        return response.read().strip()
+
+    def __getitem__(self, key):
+        return self.quotes[key]
+    def __len__(self):
+        return len(self.quotes)
+    
 """
 Class to build a URL for Yahoo stock quotes
 """
@@ -26,6 +61,8 @@ class YahooCSVURL(object):
         return self.url
     def __str__(self):
         return __unicode__(self)
+
+import unittest
     
 class TestURLs(unittest.TestCase):
     def testSingleStock(self):
@@ -37,9 +74,14 @@ class TestURLs(unittest.TestCase):
         url = YahooCSVURL(stock)
         self.assertEqual(url.url, "http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX,MPL.AX&f=nsl1op&e=.csv")
     
-        
-        # http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv
+class TestQuotes(unittest.TestCase):
+    def testQuotes(self):
+        symbols = ['CTN.AX']
+        quotes = YahooQuotes(symbols)
+        self.assertEqual(len(symbols), 1)
+        self.assertEqual(quotes[0].symbol, symbols[0]) #Should get the symbol we asked for
 
+# http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv
 #'http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv'
         
 if __name__=="__main__":
