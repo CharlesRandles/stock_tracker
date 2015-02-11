@@ -5,6 +5,7 @@ Utilities for retrieving stock data from Yahoo
 See https://code.google.com/p/yahoo-finance-managed/wiki/csvQuotesDownload
 """
 
+"""Stores a single stock quote"""
 class Quote(object):
     def __init__(self, symbol):
         self.symbol = symbol
@@ -20,10 +21,9 @@ class YahooQuotes(object):
 
     #Get the data, parse it and build the quote list
     def buildQuotes(self, symbols):
-        rawQuotes = self.get(symbols).split("\r\n")
+        rawQuotes = self.getQuotesFromYahoo(symbols).split("\r\n")
         for line in rawQuotes:
             data = line.split(',')
-            print data
             quote = Quote(data[1].strip('"'))
             quote.name = data[0].strip('"')
             quote.offer = float(data[3])
@@ -32,10 +32,10 @@ class YahooQuotes(object):
             self.quotes.append(quote)
             
     #Retrieve .csv data from Yahoo!
-    def get(self, symbols):
+    def getQuotesFromYahoo(self, symbols):
         url = YahooCSVURL(symbols).url
         response = urllib2.urlopen(url)
-        return response.read().strip()
+        return response.read().strip() #delete trailing line
 
     def __getitem__(self, key):
         return self.quotes[key]
