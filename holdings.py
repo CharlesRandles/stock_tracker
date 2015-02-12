@@ -73,7 +73,7 @@ class Holdings(object):
         html+='<thead>'
         html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Value</th><th>Profit</th></tr>\r\n'
         html += '</thead>\r\n'
-        html += '<tbody>\r\n>'
+        html += '<tbody>\r\n'
         for holding in self.holdings:
             html += holding.toHTML() + '\r\n'
         html += '</tbody>\r\n'
