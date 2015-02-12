@@ -17,6 +17,7 @@ def header():
     <html>
         <head>
             <title>Stocks</title>
+            <link rel="stylesheet" href="stocks.css"/>
         </head>"""
     return h
 

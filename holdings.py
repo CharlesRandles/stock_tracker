@@ -70,7 +70,7 @@ class Holdings(object):
 
     def toHTML(self):
         html='<table class="holdings">'
-        html+='<th><td>Symbol</td><td>Name</td><td>Holding</td><td>Bid</td><td>Value</td><td>Profit</td></th>\r\n'
+        html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Value</th><th>Profit</th></tr>\r\n'
         for holding in self.holdings:
             html += holding.toHTML() + '\r\n'
         html+='</table>'
