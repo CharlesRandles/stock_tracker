@@ -43,13 +43,13 @@ insert into holdings (symbol, holding, purchase_price, purchase_date) values(
 insert into holdings (symbol, holding, purchase_price, purchase_date) values(
        'SUN.AX',
        74,
-       13.514,
+       0.0,
        '2013-09-01 14:30:00.000');
 
 insert into holdings (symbol, holding, purchase_price, purchase_date) values(
        'SUN.AX',
        67,
-       2.0,
+       0.0,
        '2014-11-20 14:30:00.000');
 
 .print Database Created
