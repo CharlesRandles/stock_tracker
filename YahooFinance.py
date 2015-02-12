@@ -16,7 +16,7 @@ Class to retrieve a set of quotes from Yahoo and parse them into Quote objects
 """
 class YahooQuotes(object):
     def __init__(self, symbols):
-        self.quotes = []
+        self.quotes = {}
         self.buildQuotes(symbols)
 
     #Get the data, parse it and build the quote list
@@ -25,11 +25,12 @@ class YahooQuotes(object):
         for line in rawQuotes:
             data = line.split(',')
             quote = Quote(data[1].strip('"'))
+            print data[0], data[1], data[2], data[3], data[4]
             quote.name = data[0].strip('"')
-            quote.offer = float(data[3])
-            quote.bid = float(data[2])
-            quote.peak = float(data[4])
-            self.quotes.append(quote)
+            quote.offer = data[3]
+            quote.bid = data[2]
+            quote.peak = data[4]
+            self.quotes[quote.symbol]=quote
             
     #Retrieve .csv data from Yahoo!
     def getQuotesFromYahoo(self, symbols):
@@ -37,8 +38,10 @@ class YahooQuotes(object):
         response = urllib2.urlopen(url)
         return response.read().strip() #delete trailing line
 
+
     def __getitem__(self, key):
         return self.quotes[key]
+    
     def __len__(self):
         return len(self.quotes)
     
@@ -79,7 +82,7 @@ class TestQuotes(unittest.TestCase):
         symbols = ['CTN.AX']
         quotes = YahooQuotes(symbols)
         self.assertEqual(len(symbols), 1)
-        self.assertEqual(quotes[0].symbol, symbols[0]) #Should get the symbol we asked for
+        self.assertEqual(quotes[symbols[0]].symbol, symbols[0]) #Should get the symbol we asked for
 
 # http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv
 #'http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv'

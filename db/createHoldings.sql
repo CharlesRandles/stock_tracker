@@ -16,17 +16,39 @@ create table holdings (
 
 .print Creating holdings
 
-insert into holdings values(
-       0,
+insert into holdings (symbol, holding, purchase_price, purchase_date) values(
+       'AFI.AX',
+       1610,
+       6.16,
+       '2015-02-01 14:30:00.000');
+
+insert into holdings (symbol, holding, purchase_price, purchase_date) values(
+       'ARG.AX',
+       3101,
+       8.00,
+       '2014-08-18 14:30:00.000');
+
+insert into holdings (symbol, holding, purchase_price, purchase_date) values(
        'CTN.AX',
-       '14000',
+       14080,
        1.065,
        '2015-02-01 14:30:00.000');
        
-insert into holdings values(
-       1,
+insert into holdings (symbol, holding, purchase_price, purchase_date) values(
        'MPL.AX',
-       '7500',
+       7618,
+       2.0,
+       '2014-11-20 14:30:00.000');
+
+insert into holdings (symbol, holding, purchase_price, purchase_date) values(
+       'SUN.AX',
+       74,
+       13.514,
+       '2013-09-01 14:30:00.000');
+
+insert into holdings (symbol, holding, purchase_price, purchase_date) values(
+       'SUN.AX',
+       67,
        2.0,
        '2014-11-20 14:30:00.000');
 
