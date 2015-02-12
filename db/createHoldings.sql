@@ -56,4 +56,5 @@ insert into holdings (symbol, holding, purchase_price, purchase_date) values(
 select symbol from holdings;
 select count(symbol) from holdings;
 
+.exit
 
