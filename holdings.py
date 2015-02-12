@@ -73,7 +73,10 @@ class Holdings(object):
         html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Value</th><th>Profit</th></tr>\r\n'
         for holding in self.holdings:
             html += holding.toHTML() + '\r\n'
-        html+='</table>'
+        html+='</table>\r\n'
+        html += '<h4>Total cost: ${0}</h4>\r\n'.format(self.totalCost())
+        html += '<h4>Total value: ${0}</h4>\r\n'.format(self.totalValue())
+        html += '<h4>Total profit: ${0}</h4>\r\n'.format(self.totalProfit())
         return html
     
 #A single stock holding
@@ -161,15 +164,9 @@ class TestHoldings(unittest.TestCase):
         self.assertEqual(len(holdings), 6)
 
     def testAll(self):
-        h=Holdings()
-        h.loadHoldings(self.cursor)
-        print str(h)
-        h.getPrices()
-        print str(h)
-        print "Total cost: ${0}".format(h.totalCost())
-        print "Total value: ${0}".format(h.totalValue())
-        print "Profit: ${0}".format(h.totalProfit())
+        h=getHoldings()
         print h.toHTML()
+        
     def tearDown(self):
         self.db.close()
         
