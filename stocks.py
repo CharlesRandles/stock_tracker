@@ -5,6 +5,12 @@ import cgitb
 
 cgitb.enable()
 
+def contentType():
+    ct="""Content-type: text/html
+
+    """
+    return ct
+
 def header():
     h="""
     <html>
@@ -22,7 +28,7 @@ def body():
     return b
 
 def page():
-    return header() + body()
+    return contentType() + header() + body()
 
 print page()
 
