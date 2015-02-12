@@ -69,10 +69,14 @@ class Holdings(object):
         return self.__unicode__()
 
     def toHTML(self):
-        html='<table class="holdings">'
+        html='<table class="holdings">\r\n'
+        html+='<thead>'
         html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Value</th><th>Profit</th></tr>\r\n'
+        html += '</thead>\r\n'
+        html += '<tbody>\r\n>'
         for holding in self.holdings:
             html += holding.toHTML() + '\r\n'
+        html += '</tbody>\r\n'
         html+='</table>\r\n'
         html += '<h4>Total cost: ${0}</h4>\r\n'.format(self.totalCost())
         html += '<h4>Total value: ${0}</h4>\r\n'.format(self.totalValue())
