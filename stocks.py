@@ -2,6 +2,7 @@
 
 import cgi
 import cgitb
+import holdings
 
 cgitb.enable()
 
@@ -20,11 +21,13 @@ def header():
     return h
 
 def body():
+    stocks=holdings.getHoldings()
     b="""
         <body>
             <h4>Stocks</h4>
+            {0}
         </body>
-    </html>"""
+    </html>""".format(stocks.toHTML())
     return b
 
 def page():

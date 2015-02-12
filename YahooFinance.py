@@ -25,7 +25,6 @@ class YahooQuotes(object):
         for line in rawQuotes:
             data = line.split(',')
             quote = Quote(data[1].strip('"'))
-            print data[0], data[1], data[2], data[3], data[4]
             quote.name = data[0].strip('"')
             quote.offer = data[3]
             quote.bid = data[2]

@@ -10,11 +10,22 @@ import unittest
 import sqlite3
 import YahooFinance
 
+def getHoldings():
+    cursor=sqlite3.connect(DB_FILE).cursor()
+    holdings=Holdings()
+    holdings.load(cursor)
+    return holdings
+
 #A list of Holding objects 
 class Holdings(object):
     def __init__(self):
         self.holdings=[]
 
+    #Load holdings from db and get prices from Yahoo!
+    def load(self, cursor):
+        self.loadHoldings(cursor)
+        self.getPrices()
+    
     #Load all holdings from database
     def loadHoldings(self, cursor):
         sql = "select symbol, holding, purchase_price, purchase_date from holdings;"
@@ -56,6 +67,14 @@ class Holdings(object):
         
     def __str__(self):
         return self.__unicode__()
+
+    def toHTML(self):
+        html='<table class="holdings">'
+        html+='<th><td>Symbol</td><td>Name</td><td>Holding</td><td>Bid</td><td>Value</td><td>Profit</td></th>\r\n'
+        for holding in self.holdings:
+            html += holding.toHTML() + '\r\n'
+        html+='</table>'
+        return html
     
 #A single stock holding
 class Holding(object):
@@ -105,6 +124,18 @@ class Holding(object):
     
     def __str__(self):
         return self.__unicode__()
+
+    #Return a representation as an HTML table row
+    def toHTML(self):
+        html = '<tr class="holding">'
+        html += '<td>{0}</td>'.format(self.symbol)
+        html += '<td>{0}</td>'.format(self.name)
+        html += '<td>{0}</td>'.format(self.holding)
+        html += '<td>{0}</td>'.format(self.bid)
+        html += '<td>{0}</td>'.format(self.value())
+        html += '<td>{0}</td>'.format(self.profit())        
+        html += '</tr>'
+        return html
     
 class TestHolding(unittest.TestCase):
     def setUp(self):
@@ -138,6 +169,7 @@ class TestHoldings(unittest.TestCase):
         print "Total cost: ${0}".format(h.totalCost())
         print "Total value: ${0}".format(h.totalValue())
         print "Profit: ${0}".format(h.totalProfit())
+        print h.toHTML()
     def tearDown(self):
         self.db.close()
         
