@@ -31,11 +31,18 @@ def setConfig(key, val):
 def deleteConfig(key):
     sql = "delete from config where name = '{0}'".format(key)
     cursor.execute(sql)
+
+def begin_transaction():
+    sql = 'begin transaction'
+    cursor.execute(sql)
+    
+def commit():
+    sql='commit'
+    cursor.execute(sql)
         
 class TestConfig(unittest.TestCase):
     def setUp(self):
-        sql="insert into config values ('testkey', 'testval')"
-        cursor.execute(sql)
+       setConfig('testkey', 'testval')
         
     def testRead(self):
         val = getConfig('testkey')
@@ -63,9 +70,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(getConfig('foo'), None)
         
     def tearDown(self):
-        sql = "delete from config where name='testkey'"
-        cursor.execute(sql)
-        
+        map(deleteConfig, ['testkey','newkey','foo'])
 if __name__=="__main__":
     unittest.main()
 

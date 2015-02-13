@@ -4,27 +4,37 @@
 Database accessors for grabbing current holdings
 """
 
-DB_FILE="db/holdings.db"
-
 import unittest
 import sqlite3
+import datetime
 import YahooFinance
+import configdb
+
+DB_FILE="db/holdings.db"
+timeFormat = fmt="%Y-%m-%d %H:%M:%S"
 
 def getHoldings():
-    cursor=sqlite3.connect(DB_FILE).cursor()
+    db=sqlite3.connect(DB_FILE)
+    cursor=db.cursor()
     holdings=Holdings()
     holdings.load(cursor)
+    cursor.close()
+    db.close()
     return holdings
 
 #A list of Holding objects 
 class Holdings(object):
     def __init__(self):
         self.holdings=[]
+        self.lastReloadTime = configdb.getConfig('last_reload')
 
     #Load holdings from db and get prices from Yahoo!
     def load(self, cursor):
-        self.loadHoldings(cursor)
-        self.getPrices()
+        if self.shouldReload():
+            self.loadHoldings(cursor)
+            self.getPrices()
+        else:
+            self.loadFromCache()
     
     #Load all holdings from database
     def loadHoldings(self, cursor):
@@ -34,13 +44,38 @@ class Holdings(object):
             holding = Holding(row[0], row[1], row[2], row[3])
             self.holdings.append(holding)
 
+    #Ask Yahoo! for the prices
     def getPrices(self):
         quotes = YahooFinance.YahooQuotes(self.allSymbols())
         for holding in self.holdings:
             holding.name = quotes[holding.symbol].name
             holding.offer = quotes[holding.symbol].offer
             holding.bid = quotes[holding.symbol].bid
+        #Record as last reload
+        now=datetime.datetime.now()
+        self.lastReloadTime = now
+        now_str=now.strftime(timeFormat)
+        configdb.setConfig('last_reload', now_str)
+
+    def loadFromCache(self):
+        pass
             
+    #Should we reload yet?
+    def shouldReload(self):
+        now = datetime.datetime.now()
+        return (self.lastReload() + self.minReload()) < now
+
+    #When did we last hit Yahoo!?
+    def lastReload(self):
+        str_time = configdb.getConfig('last_reload')
+        #Parse the datetime
+        return datetime.datetime.strptime(str_time, timeFormat)
+
+    #how long should we wait for a reload?
+    def minReload(self):
+        str_delay = configdb.getConfig('min_reload')
+        return datetime.timedelta(seconds=int(str_delay))
+
     def allSymbols(self):
         return [holding.symbol for holding in self.holdings]
 
@@ -143,7 +178,9 @@ class Holding(object):
         html += '<td>{0}</td>'.format(self.profit())        
         html += '</tr>'
         return html
-    
+
+
+######## Unit tests
 class TestHolding(unittest.TestCase):
     def setUp(self):
         self.db=sqlite3.connect(DB_FILE)

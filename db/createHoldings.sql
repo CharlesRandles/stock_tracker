@@ -2,10 +2,10 @@
 	Create structure and data for current holdings
 */
 
-.print Destroying old objects
+select 'Destroying old objects';
 drop table if exists holdings;
 
-.print "Creating new table"
+select 'Creating new table';
 create table holdings (
        id integer primary key,
        symbol text(16),
@@ -14,7 +14,7 @@ create table holdings (
        purchase_date text(32) --ISO8601 format
 );
 
-.print Creating holdings
+select 'Creating holdings';
 
 insert into holdings (symbol, holding, purchase_price, purchase_date) values(
        'AFI.AX',
@@ -52,9 +52,8 @@ insert into holdings (symbol, holding, purchase_price, purchase_date) values(
        0.0,
        '2014-11-20 14:30:00.000');
 
-.print Database Created
+select 'Database Created';
 select symbol from holdings;
 select count(symbol) from holdings;
 
-.exit
 

@@ -3,9 +3,14 @@
 import cgi
 import cgitb
 import holdings
+import unittest
+import configdb
 
 cgitb.enable()
 
+DB='db/holdings.db'
+
+#########  HTML Genaration ###############
 def contentType():
     ct="""Content-type: text/html
 
@@ -34,5 +39,11 @@ def body():
 def page():
     return contentType() + header() + body()
 
+########## End HTML Generation ###############
+ 
+#Generate html
 print page()
+
+
+
 
