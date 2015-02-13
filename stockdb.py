@@ -16,6 +16,12 @@ def execute(sql, params):
     db.commit()
     cursor.close()
 
+def executeDirect(sql):
+    cursor = db.cursor()
+    cursor.execute(sql)
+    db.commit()
+    cursor.close()
+    
 def commit():
     db.commit()
 

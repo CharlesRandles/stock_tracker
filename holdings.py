@@ -16,7 +16,7 @@ timeFormat = fmt="%Y-%m-%d %H:%M:%S"
 def getHoldings():
     cursor=stockdb.getCursor()
     holdings=Holdings()
-    holdings.load(cursor)
+    holdings.load()
     return holdings
 
 #A list of Holding objects 
@@ -26,19 +26,21 @@ class Holdings(object):
         self.lastReloadTime = configdb.getConfig('last_reload')
 
     #Load holdings from db and get prices from Yahoo!
-    def load(self, cursor):
+    def load(self):
+        self.holdings=[]
         if self.shouldReload():
-            self.loadHoldings(cursor)
+            self.loadHoldings()
             self.getPrices()
         else:
             self.loadFromCache()
     
     #Load all holdings from database
-    def loadHoldings(self, cursor):
-        sql = "select symbol, holding, purchase_price, purchase_date from holdings;"
+    def loadHoldings(self):
+        cursor = stockdb.getCursor()
+        sql = "select symbol, '', holding, purchase_price, purchase_date from holdings;"
         cursor.execute(sql)
         for row in cursor:
-            holding = Holding(row[0], row[1], row[2], row[3])
+            holding = Holding(row[0], row[1], row[2], row[3], row[4])
             self.holdings.append(holding)
 
     #Ask Yahoo! for the prices
@@ -53,10 +55,36 @@ class Holdings(object):
         self.lastReloadTime = now
         now_str=now.strftime(timeFormat)
         configdb.setConfig('last_reload', now_str)
+        self.writeToCache()
 
+    #Pull holdings and prices from cache table
     def loadFromCache(self):
-        pass
-            
+        cursor = stockdb.getCursor()
+        sql = """select symbol,
+                        name,
+                        holding,
+                        purchase_price,
+                        purchase_date,
+                        bid,
+                        offer
+                        from cache"""
+        cursor.execute(sql)
+        for row in cursor:
+            holding = Holding(row[0],
+                              row[1],
+                              row[2],
+                              row[3],
+                              row[4],
+                              row[5],
+                              row[6])
+            self.holdings.append(holding)
+
+    #Clear and re-populate cache table
+    def writeToCache(self):
+        stockdb.executeDirect('delete from cache')
+        for holding in self.holdings:
+            holding.cache()
+    
     #Should we reload yet?
     def shouldReload(self):
         now = datetime.datetime.now()
@@ -119,22 +147,30 @@ class Holdings(object):
     
 #A single stock holding
 class Holding(object):
-    def __init__(self, symbol, holding, purchase_price, date):
+    def __init__(self, symbol, name, holding, purchase_price, date, bid=None, offer=None):
         self.symbol=symbol
+        self.name = name
         self.holding=holding
         self.purchase_price = purchase_price
         self.purchase_date = date
-        self.bid=None
-        self.offer=None
+        self.bid=bid
+        self.offer=offer
         
-    def save(self, cursor):
+    def save(self):
         sql = """insert into holdings (symbol, holding, purchase_price, purchase_date)
-                values ('{0}', {1}, {2}, '{3}');""".format( self.symbol,
-                                                           self.holding,
-                                                           self.purchase_price,
-                                                           self.purchase_date)
-        cursor.execute(sql)
+                values ('?,?,?,?');"""
+        cursor.execute(sql, ( self.symbol, self.holding, self.purchase_price, self.purchase_date))
 
+    #Write holding as a single record to the cache table
+    def cache(self):
+        sql="insert into cache values(?,?,?,?,?,?,?)"
+        stockdb.execute(sql, (self.symbol,
+                              self.name,
+                              self.holding,
+                              self.purchase_price,
+                              self.purchase_date,
+                              self.bid,
+                              self.offer))
     def value(self):
         price=0.0
         try:
@@ -185,6 +221,7 @@ class TestHolding(unittest.TestCase):
         self.cursor = stockdb.getCursor()
         self.new_holding = Holding("AFI.AX", 1601, 6.16, "2015-01-02 14:30:00.000")
         self.new_holding.save(self.cursor)
+        self.new_holding.cache()
               
     def tearDown(self):
         pass
