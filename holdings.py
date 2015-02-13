@@ -5,21 +5,18 @@ Database accessors for grabbing current holdings
 """
 
 import unittest
-import sqlite3
 import datetime
 import YahooFinance
 import configdb
+import stockdb
 
 DB_FILE="db/holdings.db"
 timeFormat = fmt="%Y-%m-%d %H:%M:%S"
 
 def getHoldings():
-    db=sqlite3.connect(DB_FILE)
-    cursor=db.cursor()
+    cursor=stockdb.getCursor()
     holdings=Holdings()
     holdings.load(cursor)
-    cursor.close()
-    db.close()
     return holdings
 
 #A list of Holding objects 
@@ -183,21 +180,16 @@ class Holding(object):
 ######## Unit tests
 class TestHolding(unittest.TestCase):
     def setUp(self):
-        self.db=sqlite3.connect(DB_FILE)
-        self.cursor = self.db.cursor()
+        self.cursor = stockdb.getCursor()
         self.new_holding = Holding("AFI.AX", 1601, 6.16, "2015-01-02 14:30:00.000")
         self.new_holding.save(self.cursor)
-        
-    def testGetHoldings(self):
-        cursor=self.cursor
-      
+              
     def tearDown(self):
-        self.db.close()
+        pass
 
 class TestHoldings(unittest.TestCase):
     def setUp(self):
-        self.db = sqlite3.connect(DB_FILE)
-        self.cursor=self.db.cursor()
+        self.cursor = stockdb.getCursor()
 
     def testLoadAll(self):
         holdings = Holdings()
@@ -209,7 +201,7 @@ class TestHoldings(unittest.TestCase):
         print h.toHTML()
         
     def tearDown(self):
-        self.db.close()
+        pass
         
 if __name__=="__main__":
     unittest.main()

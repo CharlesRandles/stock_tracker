@@ -2,43 +2,31 @@
 
 #Utility functions for config data
 import unittest
-import sqlite3
-
-DB = 'db/holdings.db'
-db = sqlite3.connect(DB)
-cursor = db.cursor()
+import stockdb
 
 def getConfig(key):
     sql="select value from config where name='{0}'".format(key)
-    cursor.execute(sql)
+    stockdb.getCursor().execute(sql)
     try:
-        val = cursor.next()[0]
+        val = stockdb.getCursor().next()[0]
     except (StopIteration):
         return None
     return val
 
 def updateConfig(key, val):
     sql = "update config set value = '{1}' where name = '{0}'".format(key, val)
-    cursor.execute(sql)
+    stockdb.getCursor().execute(sql)
 
 def setConfig(key, val):
     if getConfig(key) == None:
         sql= "insert into config (name, value) values('{0}', '{1}')".format(key, val)
-        cursor.execute(sql)
+        stockdb.getCursor().execute(sql)
     else:
         updateConfig(key, val)
 
 def deleteConfig(key):
     sql = "delete from config where name = '{0}'".format(key)
-    cursor.execute(sql)
-
-def begin_transaction():
-    sql = 'begin transaction'
-    cursor.execute(sql)
-    
-def commit():
-    sql='commit'
-    cursor.execute(sql)
+    stockdb.getCursor().execute(sql)
         
 class TestConfig(unittest.TestCase):
     def setUp(self):
