@@ -31,8 +31,10 @@ class Holdings(object):
         if self.shouldReload():
             self.loadHoldings()
             self.getPrices()
+            self.source = "Yahoo!"
         else:
             self.loadFromCache()
+            self.source="Cache"
     
     #Load all holdings from database
     def loadHoldings(self):
@@ -142,7 +144,8 @@ class Holdings(object):
         html += '<h4>Total value: ${0}</h4>\r\n'.format(self.totalValue())
         html += '<h4>Total profit: ${0}</h4>\r\n'.format(self.totalProfit())
         html += '<h4>Prices retrieved: {0}</h4>\r\n'.format(self.lastReloadTime)
-        
+        html += '<h4>Source: {0}</h4>\r\n'.format(self.source)
+                
         return html
     
 #A single stock holding
