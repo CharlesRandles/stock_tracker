@@ -3,31 +3,33 @@
 #Utility functions for config data
 import unittest
 import stockdb
+import sqlite3
 
 def getConfig(key):
-    sql="select value from config where name='{0}'".format(key)
-    stockdb.getCursor().execute(sql)
+    cursor = stockdb.getCursor()
+    sql="select value from config where name=?"
+    cursor.execute(sql, (key,))
     try:
-        val = stockdb.getCursor().next()[0]
+        return cursor.next()[0]
     except (StopIteration):
         return None
-    return val
 
 def updateConfig(key, val):
-    sql = "update config set value = '{1}' where name = '{0}'".format(key, val)
-    stockdb.getCursor().execute(sql)
-
+    sql = "update config set value = ? where name = ?"
+    stockdb.execute(sql, (val, key))
+    
 def setConfig(key, val):
     if getConfig(key) == None:
-        sql= "insert into config (name, value) values('{0}', '{1}')".format(key, val)
-        stockdb.getCursor().execute(sql)
+        sql= "insert into config (name, value) values(?, ?)"
+        stockdb.execute(sql, (key,val))
     else:
         updateConfig(key, val)
 
 def deleteConfig(key):
-    sql = "delete from config where name = '{0}'".format(key)
-    stockdb.getCursor().execute(sql)
-        
+    sql = "delete from config where name = ?"
+    stockdb.execute(sql, (key,))
+
+    
 class TestConfig(unittest.TestCase):
     def setUp(self):
        setConfig('testkey', 'testval')

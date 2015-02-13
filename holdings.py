@@ -113,6 +113,8 @@ class Holdings(object):
         html += '<h4>Total cost: ${0}</h4>\r\n'.format(self.totalCost())
         html += '<h4>Total value: ${0}</h4>\r\n'.format(self.totalValue())
         html += '<h4>Total profit: ${0}</h4>\r\n'.format(self.totalProfit())
+        html += '<h4>Prices retrieved: {0}</h4>\r\n'.format(self.lastReloadTime)
+        
         return html
     
 #A single stock holding
