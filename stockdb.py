@@ -1,0 +1,24 @@
+#!/usr/bin/python
+
+"""Database access functions"""
+
+import sqlite3
+
+DB = 'db/holdings.db'
+db = sqlite3.connect(DB)
+
+def getCursor():
+    return db.cursor()
+
+def execute(sql, params):
+    cursor = db.cursor()
+    cursor.execute(sql, params)
+    db.commit()
+    cursor.close()
+
+def commit():
+    db.commit()
+
+def close():
+    cursor.close()
+    db.close()
