@@ -6,10 +6,10 @@ table {
 	border: 2px solid black;
 }
 
-.gain {
+td.gain {
     background-color: #20e040;
 }
 
-.loss {
+td.loss {
     background-color: #e02040;
 }
