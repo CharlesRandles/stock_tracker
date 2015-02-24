@@ -10,4 +10,5 @@ create table cache ( symbol text(16),
        		     purchase_price real,
        		     purchase_date text(32), --ISO8601 format
 		     bid real,
-		     offer real);
+		     offer real,
+		     change real);

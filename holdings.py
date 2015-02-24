@@ -52,6 +52,7 @@ class Holdings(object):
             holding.name = quotes[holding.symbol].name
             holding.offer = quotes[holding.symbol].offer
             holding.bid = quotes[holding.symbol].bid
+            holding.change = quotes[holding.symbol].change
         #Record as last reload
         now=datetime.datetime.now()
         self.lastReloadTime = now
@@ -68,7 +69,8 @@ class Holdings(object):
                         purchase_price,
                         purchase_date,
                         bid,
-                        offer
+                        offer,
+                        change
                         from cache"""
         cursor.execute(sql)
         for row in cursor:
@@ -78,7 +80,8 @@ class Holdings(object):
                               row[3],
                               row[4],
                               row[5],
-                              row[6])
+                              row[6],
+                              row[7])
             self.holdings.append(holding)
 
     #Clear and re-populate cache table
@@ -133,7 +136,7 @@ class Holdings(object):
     def toHTML(self):
         html='<table class="holdings">\r\n'
         html+='<thead>'
-        html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Value</th><th>Profit</th></tr>\r\n'
+        html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Change</th><th>Value</th><th>Profit</th></tr>\r\n'
         html += '</thead>\r\n'
         html += '<tbody>\r\n'
         for holding in self.holdings:
@@ -150,7 +153,7 @@ class Holdings(object):
     
 #A single stock holding
 class Holding(object):
-    def __init__(self, symbol, name, holding, purchase_price, date, bid=None, offer=None):
+    def __init__(self, symbol, name, holding, purchase_price, date, bid=None, offer=None, change=None):
         self.symbol=symbol
         self.name = name
         self.holding=holding
@@ -158,6 +161,7 @@ class Holding(object):
         self.purchase_date = date
         self.bid=bid
         self.offer=offer
+        self.change=change
         
     def save(self):
         sql = """insert into holdings (symbol, holding, purchase_price, purchase_date)
@@ -166,14 +170,15 @@ class Holding(object):
 
     #Write holding as a single record to the cache table
     def cache(self):
-        sql="insert into cache values(?,?,?,?,?,?,?)"
+        sql="insert into cache values(?,?,?,?,?,?,?,?)"
         stockdb.execute(sql, (self.symbol,
                               self.name,
                               self.holding,
                               self.purchase_price,
                               self.purchase_date,
                               self.bid,
-                              self.offer))
+                              self.offer,
+                              self.change))
     def value(self):
         price=0.0
         try:
@@ -194,10 +199,11 @@ class Holding(object):
         return self.value() - self.purchaseCost()
     
     def __unicode__(self):
-        return "symbol:{0} holding:{1} bid: {2} offer: {3} cost: ${4} value: ${5} profit:${6}".format(self.symbol, 
+        return "symbol:{0} holding:{1} bid: {2} offer: {3} change: {4} cost: ${5} value: ${6} profit:${7}".format(self.symbol, 
                                                                   self.holding,
                                                                   self.bid,
                                                                   self.offer,
+                                                                  self.change,
                                                                   self.purchaseCost(),
                                                                   self.value(),
                                                                   self.profit())
@@ -207,11 +213,16 @@ class Holding(object):
 
     #Return a representation as an HTML table row
     def toHTML(self):
+        if float(self.change) >=0.0:
+            gainLoss = "gain"
+        else:
+            gainLoss="loss"
         html = '<tr class="holding">'
         html += '<td>{0}</td>'.format(self.symbol)
         html += '<td>{0}</td>'.format(self.name)
         html += '<td>{0}</td>'.format(self.holding)
         html += '<td>{0}</td>'.format(self.bid)
+        html += '<td class="{1}">{0}</td>'.format(self.change, gainLoss)
         html += '<td>{0}</td>'.format(self.value())
         html += '<td>{0}</td>'.format(self.profit())        
         html += '</tr>'
@@ -235,7 +246,7 @@ class TestHoldings(unittest.TestCase):
 
     def testLoadAll(self):
         holdings = Holdings()
-        holdings.loadHoldings(self.cursor)
+        holdings.loadHoldings()
         self.assertEqual(len(holdings), 6)
 
     def testAll(self):

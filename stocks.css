@@ -5,3 +5,11 @@ body {
 table {
 	border: 2px solid black;
 }
+
+.gain {
+    background-color: #20e040;
+}
+
+.loss {
+    background-color: #e02040;
+}

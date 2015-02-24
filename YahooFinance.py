@@ -29,11 +29,18 @@ class YahooQuotes(object):
             quote.offer = data[3]
             quote.bid = data[2]
             quote.peak = data[4]
+            quote.change = data[5]
             self.quotes[quote.symbol]=quote
             
     #Retrieve .csv data from Yahoo!
     def getQuotesFromYahoo(self, symbols):
-        url = YahooCSVURL(symbols).url
+        options = [  'n'
+                    ,'s'
+                    ,'l1'
+                    ,'o'
+                    ,'p'
+                    ,'c1']
+        url = YahooCSVURL(symbols, options).url
         response = urllib2.urlopen(url)
         return response.read().strip() #delete trailing line
 
@@ -53,10 +60,11 @@ class YahooCSVURL(object):
     download them as .csv
     Example URL for CTN.AX: "http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv"
     """
-    def __init__(self, stockList):
+    def __init__(self, stockList, options):
         quotesURL="http://download.finance.yahoo.com/d/quotes.csv"
         queryString = ",".join(stockList)
-        options = "&f=nsl1op&e=.csv"
+        optionString = ''.join(options)
+        options = "&f={0}&e=.csv".format(optionString)
         self.url = quotesURL + "?s=" + queryString + options
 
     def __unicode__(self):
@@ -67,13 +75,21 @@ class YahooCSVURL(object):
 import unittest
     
 class TestURLs(unittest.TestCase):
+    def setUp(self):
+        self.options = [ 'n'
+                        ,'s'
+                        ,'l1'
+                        ,'o'
+                        ,'p']
+                      #,'c1'
+        
     def testSingleStock(self):
         stock = ["CTN.AX"]
-        url = YahooCSVURL(stock)
+        url = YahooCSVURL(stock, self.options)
         self.assertEqual(url.url, "http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv")
     def testMultipleStock(self):
         stock = ["CTN.AX", "MPL.AX"]
-        url = YahooCSVURL(stock)
+        url = YahooCSVURL(stock, self.options)
         self.assertEqual(url.url, "http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX,MPL.AX&f=nsl1op&e=.csv")
     
 class TestQuotes(unittest.TestCase):
