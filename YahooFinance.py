@@ -80,17 +80,17 @@ class TestURLs(unittest.TestCase):
                         ,'s'
                         ,'l1'
                         ,'o'
-                        ,'p']
-                      #,'c1'
+                        ,'p'
+                        ,'c1']
         
     def testSingleStock(self):
         stock = ["CTN.AX"]
         url = YahooCSVURL(stock, self.options)
-        self.assertEqual(url.url, "http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv")
+        self.assertEqual(url.url, "http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1opc1&e=.csv")
     def testMultipleStock(self):
         stock = ["CTN.AX", "MPL.AX"]
         url = YahooCSVURL(stock, self.options)
-        self.assertEqual(url.url, "http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX,MPL.AX&f=nsl1op&e=.csv")
+        self.assertEqual(url.url, "http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX,MPL.AX&f=nsl1opc1&e=.csv")
     
 class TestQuotes(unittest.TestCase):
     def testQuotes(self):
