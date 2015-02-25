@@ -118,6 +118,9 @@ class Holdings(object):
     def totalProfit(self):
         return sum([holding.profit() for holding in self.holdings])
     
+    def dayProfit(self):
+        return sum([holding.dayProfit() for holding in self.holdings])
+    
     def __getitem__(self, key):
         return self.holdings[key]
 
@@ -146,6 +149,7 @@ class Holdings(object):
         html += '<h4>Total cost: ${0}</h4>\r\n'.format(self.totalCost())
         html += '<h4>Total value: ${0}</h4>\r\n'.format(self.totalValue())
         html += '<h4>Total profit: ${0}</h4>\r\n'.format(self.totalProfit())
+        html += '<h4>Day profit: ${0}</h4>\r\n'.format(self.dayProfit())
         html += '<h4>Prices retrieved: {0}</h4>\r\n'.format(self.lastReloadTime)
         html += '<h4>Source: {0}</h4>\r\n'.format(self.source)
                 
