@@ -1,5 +1,7 @@
 --A table for caching holdings and prices
 
+select '*** Cache table ***';
+
 select 'Dropping old cache table';
 drop table if exists cache;
 
@@ -12,3 +14,5 @@ create table cache ( symbol text(16),
 		     bid real,
 		     offer real,
 		     change real);
+
+select '*** Cache complete ***';

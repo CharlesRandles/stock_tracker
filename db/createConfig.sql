@@ -1,3 +1,5 @@
+select '*** Config table ***';
+
 --Clear old table
 drop table if exists config;
 
@@ -11,4 +13,4 @@ select 'Inserting metadata';
 insert into config values ('min_reload', '300');
 insert into config values ('last_reload', '2000-01-01 00:00:00'); --more than 300 seconds ago
 
-select * from config;
+select '*** Config created ***';

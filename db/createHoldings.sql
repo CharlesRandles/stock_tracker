@@ -2,6 +2,8 @@
 	Create structure and data for current holdings
 */
 
+select '*** Holdings table ***';
+
 select 'Destroying old objects';
 drop table if exists holdings;
 
@@ -56,4 +58,4 @@ select 'Database Created';
 select symbol from holdings;
 select count(symbol) from holdings;
 
-
+select '*** Holdings table complete ***';
