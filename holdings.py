@@ -19,6 +19,20 @@ def getHoldings():
     holdings.load()
     return holdings
 
+#Helper for messing with timezones
+def parseOffset(offset):
+    hours = int(offset[0:3])
+    minutes = int(offset[3:])
+    return datetime.timedelta(hours=hours, minutes=minutes)
+
+def toUTC(time, offset):
+    return time + parseOffset(offset)
+
+def nowUTC():
+    offset = configdb.getConfig('server_utcoffset')
+    now_utc=toUTC(datetime.datetime.now(), offset)
+    return now_utc.strftime(timeFormat)
+
 #A list of Holding objects 
 class Holdings(object):
     def __init__(self):
@@ -267,6 +281,22 @@ class TestHoldings(unittest.TestCase):
         
     def tearDown(self):
         pass
-        
+
+class TestTimeUtils(unittest.TestCase):
+    def testConfig(self):
+        serverOffset = configdb.getConfig('server_utcoffset')
+        self.assertEqual(serverOffset, '-0800')
+
+    def testOffsetParser(self):
+        self.assertEqual(parseOffset('+0100').seconds, 3600)
+        self.assertEqual(parseOffset('-0100').days, -1)
+        self.assertEqual(parseOffset('-0100').seconds, 23 * 3600)
+
+    def testToUTC(self):
+        d=datetime.datetime(2015, 02, 25, 17, 00, 00)
+        self.assertEqual(toUTC(d, '+0000'), d)
+        self.assertEqual(toUTC(d, '+0200'), d + datetime.timedelta(hours=2))
+        self.assertEqual(toUTC(d, '-0200'), d + datetime.timedelta(hours=-2))
+    
 if __name__=="__main__":
     unittest.main()

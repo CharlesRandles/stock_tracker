@@ -3,7 +3,6 @@
 #Utility functions for config data
 import unittest
 import stockdb
-import sqlite3
 
 def getConfig(key):
     cursor = stockdb.getCursor()
