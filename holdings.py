@@ -295,8 +295,8 @@ class TestTimeUtils(unittest.TestCase):
     def testToUTC(self):
         d=datetime.datetime(2015, 02, 25, 17, 00, 00)
         self.assertEqual(toUTC(d, '+0000'), d)
-        self.assertEqual(toUTC(d, '+0200'), d + datetime.timedelta(hours=2))
-        self.assertEqual(toUTC(d, '-0200'), d + datetime.timedelta(hours=-2))
+        self.assertEqual(toUTC(d, '+0200'), d + datetime.timedelta(hours=-2))
+        self.assertEqual(toUTC(d, '-0200'), d + datetime.timedelta(hours=2))
     
 if __name__=="__main__":
     unittest.main()
