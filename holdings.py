@@ -26,7 +26,7 @@ def parseOffset(offset):
     return datetime.timedelta(hours=hours, minutes=minutes)
 
 def toUTC(time, offset):
-    return time + parseOffset(offset)
+    return time - parseOffset(offset)
 
 def nowUTC():
     offset = configdb.getConfig('server_utcoffset')
