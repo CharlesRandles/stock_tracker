@@ -136,7 +136,7 @@ class Holdings(object):
     def toHTML(self):
         html='<table class="holdings">\r\n'
         html+='<thead>'
-        html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Change</th><th>Value</th><th>Profit</th></tr>\r\n'
+        html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Change</th><th>Gain/Loss</th><th>Value</th><th>Profit</th></tr>\r\n'
         html += '</thead>\r\n'
         html += '<tbody>\r\n'
         for holding in self.holdings:
@@ -188,7 +188,6 @@ class Holding(object):
         return self.holding * price
 
     def purchaseCost(self):
-        price=0.0
         try:
             price = float(self.purchase_price)
         except (ValueError, TypeError):
@@ -197,16 +196,24 @@ class Holding(object):
 
     def profit(self):
         return self.value() - self.purchaseCost()
+
+    def dayProfit(self):
+        try:
+            change = float(self.change)
+        except (ValueError, TypeError):
+            change=0.0
+        return self.holding * change
     
     def __unicode__(self):
-        return "symbol:{0} holding:{1} bid: {2} offer: {3} change: {4} cost: ${5} value: ${6} profit:${7}".format(self.symbol, 
+        return "symbol:{0} holding:{1} bid: {2} offer: {3} change: {4} gain/loss: {8} cost: ${5} value: ${6} profit:${7}".format(self.symbol, 
                                                                   self.holding,
                                                                   self.bid,
                                                                   self.offer,
                                                                   self.change,
                                                                   self.purchaseCost(),
                                                                   self.value(),
-                                                                  self.profit())
+                                                                  self.profit(),
+                                                                  self.dayProfit())
     
     def __str__(self):
         return self.__unicode__()
@@ -223,6 +230,7 @@ class Holding(object):
         html += '<td>{0}</td>'.format(self.holding)
         html += '<td>{0}</td>'.format(self.bid)
         html += '<td class="{1}">{0}</td>'.format(self.change, gainLoss)
+        html += '<td class="{1}">{0}</td>'.format(self.dayProfit(), gainLoss)
         html += '<td>{0}</td>'.format(self.value())
         html += '<td>{0}</td>'.format(self.profit())        
         html += '</tr>'
