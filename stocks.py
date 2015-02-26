@@ -12,7 +12,7 @@ DB='db/holdings.db'
 
 #########  HTML Generation ###############
 def contentType():
-    ct="""Content-type: text/html
+    ct="""Content-Type: text/html; charset=utf-8
 
     """
     return ct
