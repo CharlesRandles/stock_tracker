@@ -19,11 +19,12 @@ def contentType():
 
 def header():
     h="""
-    <html>
-        <head>
-            <title>Stocks</title>
-            <link rel="stylesheet" href="stocks.css"/>
-        </head>"""
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Stocks</title>
+        <link rel="stylesheet" href="stocks.css"/>
+    </head>"""
     return h
 
 def refresh_form():
