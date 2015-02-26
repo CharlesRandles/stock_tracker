@@ -158,7 +158,7 @@ class Holdings(object):
             <th>Symbol</th>
             <th>Name</th>
             <th>Holding</th>
-            <th>Purchase Price</th>
+            <th>Purchase</th>
             <th>Bid</th>
             <th>Value</th>
             <th>Profit</th>
