@@ -153,7 +153,18 @@ class Holdings(object):
     def toHTML(self):
         html='<table class="holdings">\r\n'
         html+='<thead>'
-        html+='<tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Bid</th><th>Change</th><th>Gain/Loss</th><th>Value</th><th>Profit</th></tr>\r\n'
+        html+="""
+        <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Holding</th>
+            <th>Purchase Price</th>
+            <th>Bid</th>
+            <th>Value</th>
+            <th>Profit</th>
+            <th>Change</th>
+            <th>Gain/Loss</th>
+            </tr>\r\n"""
         html += '</thead>\r\n'
         html += '<tbody>\r\n'
         for holding in self.holdings:
@@ -246,11 +257,12 @@ class Holding(object):
         html += '<td>{0}</td>'.format(self.symbol)
         html += '<td>{0}</td>'.format(self.name)
         html += '<td>{0}</td>'.format(self.holding)
+        html += '<td>{0}</td>'.format(self.purchase_price)
         html += '<td>{0}</td>'.format(self.bid)
-        html += '<td class="{1}">{0}</td>'.format(self.change, gainLoss)
-        html += '<td class="{1}">{0}</td>'.format(self.dayProfit(), gainLoss)
         html += '<td>{0}</td>'.format(self.value())
-        html += '<td>{0}</td>'.format(self.profit())        
+        html += '<td>{0}</td>'.format(self.profit())    
+        html += '<td class="{1}">{0}</td>'.format(self.change, gainLoss)
+        html += '<td class="{1}">{0}</td>'.format(self.dayProfit(), gainLoss)    
         html += '</tr>'
         return html
 
