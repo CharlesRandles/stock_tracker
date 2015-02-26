@@ -29,7 +29,7 @@ def header():
 def refresh_form():
     f="""
     <form method="GET" action="stocks.py">
-        <input type="submit" name="Refresh"
+        <input type="submit" value="Refresh />"
     </form>
     """
     return f
