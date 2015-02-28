@@ -3,11 +3,16 @@
 */
 
 select '*** Holdings table ***';
+select 'Dropping backup';
+drop table if exists holdings_backup;
 
-select 'Destroying old objects';
+select 'Create backup';
+create table holdings_backup as select * from holdings;
+
+select 'Dropping holdings table';
 drop table if exists holdings;
 
-select 'Creating new table';
+select 'Creating holdings table';
 create table holdings (
        id integer primary key,
        symbol text(16),
@@ -17,7 +22,9 @@ create table holdings (
 );
 
 select 'Creating holdings';
+insert into holdings select * from holdings_backup;
 
+/*
 insert into holdings (symbol, holding, purchase_price, purchase_date) values(
        'AFI.AX',
        1610,
@@ -55,6 +62,7 @@ insert into holdings (symbol, holding, purchase_price, purchase_date) values(
        '2014-11-20 14:30:00.000');
 
 select 'Database Created';
+*/
 select symbol from holdings;
 select count(symbol) from holdings;
 
