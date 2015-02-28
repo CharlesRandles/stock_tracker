@@ -5,28 +5,11 @@ import cgitb
 import holdings
 import unittest
 import configdb
+import html
 
 cgitb.enable()
 
-DB='db/holdings.db'
-
 #########  HTML Generation ###############
-def contentType():
-    ct="""Content-Type: text/html; charset=utf-8
-
-    """
-    return ct
-
-def header():
-    h="""
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Stocks</title>
-        <link rel="stylesheet" href="stocks.css"/>
-    </head>"""
-    return h
-
 def refresh_form():
     f="""
     <form method="GET" action="stocks.py">
@@ -49,7 +32,7 @@ def body():
     return b
 
 def page():
-    return contentType() + header() + body()
+    return html.contentType() + html.header() + body()
 
 ########## End HTML Generation ###############
  

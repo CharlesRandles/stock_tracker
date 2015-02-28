@@ -4,7 +4,7 @@ import cgitb
 import unittest
 import configdb
 import holdings
-import stocks
+import html
 
 cgitb.enable()
 
@@ -41,6 +41,6 @@ def body():
 """.format(holdingsForm())
 
 def page():
-    return stocks.contentType() + stocks.header() + body()
+    return html.contentType() + html.header() + body()
 
 print page()
