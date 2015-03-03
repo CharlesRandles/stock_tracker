@@ -160,6 +160,7 @@ class Holdings(object):
             <th>Holding</th>
             <th>Purchase</th>
             <th>Bid</th>
+            <th>Offer</th>
             <th>Value</th>
             <th>Profit</th>
             <th>Change</th>
@@ -259,6 +260,7 @@ class Holding(object):
         html += '<td>{0}</td>'.format(self.holding)
         html += '<td>{0}</td>'.format(self.purchase_price)
         html += '<td>{0}</td>'.format(self.bid)
+        html += '<td>{0}</td>'.format(self.offer)        
         html += '<td>{0}</td>'.format(self.value())
         html += '<td>{0}</td>'.format(self.profit())    
         html += '<td class="{1}">{0}</td>'.format(self.change, gainLoss)
