@@ -63,10 +63,16 @@ class Holdings(object):
     def getPrices(self):
         quotes = YahooFinance.YahooQuotes(self.allSymbols())
         for holding in self.holdings:
-            holding.name = quotes[holding.symbol].name
-            holding.offer = quotes[holding.symbol].offer
-            holding.bid = quotes[holding.symbol].bid
-            holding.change = quotes[holding.symbol].change
+            try:
+                holding.name = quotes[holding.symbol].name
+                holding.offer = quotes[holding.symbol].offer
+                holding.bid = quotes[holding.symbol].bid
+                holding.change = quotes[holding.symbol].change
+            except (KeyError):
+                holding.name = "Not found"
+                holding.offer = "Not found"
+                holding.bid = "Not found"
+                holding.change = "Not found"
         #Record as last reload
         now=datetime.datetime.now()
         self.lastReloadTime = now
