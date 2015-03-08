@@ -21,7 +21,7 @@ class YahooQuotes(object):
 
     #Get the data, parse it and build the quote list
     def buildQuotes(self, symbols):
-        rawQuotes = self.getQuotesFromYahoo(symbols).split("\r\n")
+        rawQuotes = self.getQuotesFromYahoo(symbols).split("\n")
         for line in rawQuotes:
             data = line.split(',')
             quote = Quote(data[1].strip('"'))
