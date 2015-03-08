@@ -70,9 +70,9 @@ class Holdings(object):
                 holding.change = quotes[holding.symbol].change
             except (KeyError):
                 holding.name = "Not found"
-                holding.offer = "Not found"
-                holding.bid = "Not found"
-                holding.change = "Not found"
+                holding.offer = 0.0
+                holding.bid = 0.0
+                holding.change = 0.0
         #Record as last reload
         now=datetime.datetime.now()
         self.lastReloadTime = now
