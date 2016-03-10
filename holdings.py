@@ -256,10 +256,13 @@ class Holding(object):
 
     #Return a representation as an HTML table row
     def toHTML(self):
-        if float(self.change) >=0.0:
+        try:
+            if float(self.change) >=0.0:
+                gainLoss = "gain"
+            else:
+                gainLoss="loss"
+        except ValueError:
             gainLoss = "gain"
-        else:
-            gainLoss="loss"
         html = '<tr class="holding">'
         html += '<td>{0}</td>'.format(self.symbol)
         html += '<td>{0}</td>'.format(self.name)
