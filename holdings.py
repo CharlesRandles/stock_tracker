@@ -301,12 +301,20 @@ class HoldingSummary(object):
                       <td>{}</td>
                       <td>{}</td>
                       <td class="{}">{}</td>
+                      <td>{}</td>
                   </tr>\r\n""".format(self.symbol,
                                       self.name,
                                       self.holding,
                                       self.purchase_cost,
                                       gainLoss,
-                                      self.value)
+                                      self.value,
+                                      self.growth_percentage())
+    def growth_percentage(self):
+        try:
+            growth = (self.value - self.purchase_cost)/self.purchase_cost
+        except ZeroDivisionError:
+            return "n/a:"
+        return "{:.2%}".format(growth)
 
 class PortfolioSummary(object):
     def __init__(self, holdings):
