@@ -287,9 +287,7 @@ class HoldingSummary(object):
         
     def addHolding(self, h):
         self.holding += h.holding
-        v = h.purchase_price * h.holding
-        print v, type(v), type(self.purchase_cost)
-        self.purchase_cost += v
+        self.purchase_cost += h.purchase_price * h.holding
 
     def toHTML(self):
         return "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>\r\n".format(self.symbol,
