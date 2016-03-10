@@ -309,7 +309,7 @@ class PortfolioSummary(object):
     def toHTML(self):
         html="""
         <table>
-          <th><td>Symbol</td><td>Name</td><td>Holding</td><td>Cost</td><td>Value</td></th>\r\n"""
+          <tr><th>Symbol</th><th>Name</th><th>Holding</th><th>Cost</th><th>Value</th></tr>\r\n"""
         for k in self._summary:
             html += self._summary[k].toHTML()
         html += "</table>"
