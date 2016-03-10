@@ -12,7 +12,7 @@ cgitb.enable()
 #########  HTML Generation ###############
 def refresh_form():
     f="""
-    <form method="GET" action="stocks.py">
+    <form method="GET" action="summary.py">
         <input type="submit" value="Refresh" />
     </form>
     """

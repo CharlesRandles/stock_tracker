@@ -290,11 +290,24 @@ class HoldingSummary(object):
         self.purchase_cost += h.purchase_price * h.holding
 
     def toHTML(self):
-        return "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>\r\n".format(self.symbol,
-                                                                                             self.name,
-                                                                                             self.holding,
-                                                                                             self.purchase_cost,
-                                                                                             self.value)
+        if self.value >= self.purchase_cost:
+            gainLoss = "gain"
+        else:
+            gainLoss = "loss"
+        return """
+            <tr>
+                      <td>{}</td>
+                      <td>{}</td>
+                      <td>{}</td>
+                      <td>{}</td>
+                      <td class="{}">{}</td>
+                  </tr>\r\n""".format(self.symbol,
+                                      self.name,
+                                      self.holding,
+                                      self.purchase_cost,
+                                      gainLoss,
+                                      self.value)
+
 class PortfolioSummary(object):
     def __init__(self, holdings):
         self._summary={}
