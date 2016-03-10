@@ -298,7 +298,8 @@ class HoldingSummary(object):
 class PortfolioSummary(object):
     def __init__(self, holdings):
         self._summary={}
-        for h in holdings:
+        self._holdings = holdings
+        for h in self._holdings:
             if self._summary.has_key(h.symbol):
                 self._summary[h.symbol].addHolding(h)
             else:
@@ -312,6 +313,12 @@ class PortfolioSummary(object):
         for k in self._summary:
             html += self._summary[k].toHTML()
         html += "</table>"
+        html += '<h4>Total cost: ${0}</h4>\r\n'.format(self._holdings.totalCost())
+        html += '<h4>Total value: ${0}</h4>\r\n'.format(self._holdings.totalValue())
+        html += '<h4>Total profit: ${0}</h4>\r\n'.format(self._holdings.totalProfit())
+        html += '<h4>Day profit: ${0}</h4>\r\n'.format(self._holdings.dayProfit())
+        html += '<h4>Prices retrieved: {0}</h4>\r\n'.format(self._holdings.lastReloadTime)
+        html += '<h4>Source: {0}</h4>\r\n'.format(self._holdings.source)
         return html
 
 ######## Unit tests
