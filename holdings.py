@@ -180,6 +180,7 @@ class Holdings(object):
         html+='</table>\r\n'
         html += '<h4>Total cost: ${0}</h4>\r\n'.format(self.totalCost())
         html += '<h4>Total value: ${0}</h4>\r\n'.format(self.totalValue())
+        html += '<h3>Growth: {:.02%}</h3>\r\n'.format((self.totalValue()-self.totalCost())/self.totalCost())
         html += '<h4>Total profit: ${0}</h4>\r\n'.format(self.totalProfit())
         html += '<h4>Day profit: ${0}</h4>\r\n'.format(self.dayProfit())
         html += '<h4>Prices retrieved: {0}</h4>\r\n'.format(self.lastReloadTime)
@@ -337,6 +338,9 @@ class PortfolioSummary(object):
         html += '<h4>Total cost: ${0}</h4>\r\n'.format(self._holdings.totalCost())
         html += '<h4>Total value: ${0}</h4>\r\n'.format(self._holdings.totalValue())
         html += '<h4>Total profit: ${0}</h4>\r\n'.format(self._holdings.totalProfit())
+        html += '<h3>Growth: {:.02%}</h3>\r\n'.format((self._holdings.totalValue()
+                                                   -self._holdings.totalCost())
+                                                   /self._holdings.totalCost())
         html += '<h4>Day profit: ${0}</h4>\r\n'.format(self._holdings.dayProfit())
         html += '<h4>Prices retrieved: {0}</h4>\r\n'.format(self._holdings.lastReloadTime)
         html += '<h4>Source: {0}</h4>\r\n'.format(self._holdings.source)
