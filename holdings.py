@@ -277,12 +277,50 @@ class Holding(object):
         html += '</tr>'
         return html
 
+class HoldingSummary(object):
+    def __init__(self, h):
+        self.symbol=h.symbol
+        self.name=h.name
+        self.holding=h.holding
+        self.purchase_cost=h.purchaseCost()
+        self.value=h.value()
+        
+    def addHolding(self, h):
+        self.holding += h.holding
+        v = h.purchase_price * h.holding
+        print v, type(v), type(self.purchase_cost)
+        self.purchase_cost += v
+
+    def toHTML(self):
+        return "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>\r\n".format(self.symbol,
+                                                                                             self.name,
+                                                                                             self.holding,
+                                                                                             self.purchase_cost,
+                                                                                             self.value)
+class PortfolioSummary(object):
+    def __init__(self, holdings):
+        self._summary={}
+        for h in holdings:
+            if self._summary.has_key(h.symbol):
+                self._summary[h.symbol].addHolding(h)
+            else:
+                self._summary[h.symbol] = HoldingSummary(h)
+    def summary(self):
+        return self._summary
+    def toHTML(self):
+        html="""
+        <table>
+          <th><td>Symbol</td><td>Name</td><td>Holding</td><td>Cost</td><td>Value</td></th>\r\n"""
+        for k in self._summary:
+            html += self._summary[k].toHTML()
+        html += "</table>"
+        return html
 
 ######## Unit tests
 class TestHolding(unittest.TestCase):
     def setUp(self):
         self.cursor = stockdb.getCursor()
-        self.new_holding = Holding("AFI.AX", 1601, 6.16, "2015-01-02 14:30:00.000")
+        self.new_holding = Holding("AFI.AX", "AFI FPO", 1601, 6.16, "2015-01-02 14:30:00.000")
         self.new_holding.save(self.cursor)
         self.new_holding.cache()
               
@@ -320,6 +358,21 @@ class TestTimeUtils(unittest.TestCase):
         self.assertEqual(toUTC(d, '+0000'), d)
         self.assertEqual(toUTC(d, '+0200'), d + datetime.timedelta(hours=-2))
         self.assertEqual(toUTC(d, '-0200'), d + datetime.timedelta(hours=2))
+
+
+class testSummaries(unittest.TestCase):
+    def setUp(self):
+        self.new_holding = Holding("AFI.AX", "AFI FPO", 1601, 6.16, "2015-01-02 14:30:00.000")
+        
+    def testInit(self):
+        s = HoldingSummary(self.new_holding)
+        self.assertEqual(s.symbol, "AFI.AX")
+
+class testPortfolioSummary(unittest.TestCase):
     
+    def testPortfolio(self):
+        s = PortfolioSummary(getHoldings())
+        print s
+        
 if __name__=="__main__":
     unittest.main()
