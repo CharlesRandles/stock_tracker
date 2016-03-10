@@ -25,6 +25,7 @@ def body():
         <h4>Stocks</h4>
         {0}
         {1}
+        <a href="summary.py">Summary Report</a>
     </body>
 </html>
     """.format(stocks.toHTML(),
