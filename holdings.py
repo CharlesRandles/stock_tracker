@@ -53,7 +53,9 @@ class Holdings(object):
     #Load all holdings from database
     def loadHoldings(self):
         cursor = stockdb.getCursor()
-        sql = "select symbol, '', holding, purchase_price, purchase_date from holdings;"
+        sql = """select symbol, '', holding, purchase_price, purchase_date 
+                 from holdings
+                 where sale_date is null;"""
         cursor.execute(sql)
         for row in cursor:
             holding = Holding(row[0], row[1], row[2], row[3], row[4])
@@ -91,7 +93,8 @@ class Holdings(object):
                         bid,
                         offer,
                         change
-                        from cache"""
+                        from cache
+                        where sale_date is null"""
         cursor.execute(sql)
         for row in cursor:
             holding = Holding(row[0],
