@@ -18,7 +18,9 @@ create table holdings (
        symbol text(16),
        holding integer,
        purchase_price real,
-       purchase_date text(32) --ISO8601 format
+       purchase_date text(32), --ISO8601 format
+       sale_price real,
+       sale_date text(32)
 );
 
 select 'Creating holdings';
