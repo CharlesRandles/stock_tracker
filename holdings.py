@@ -210,7 +210,16 @@ class Holding(object):
 
     #Write holding as a single record to the cache table
     def cache(self):
-        sql="insert into cache values(?,?,?,?,?,?,?,?)"
+        sql="""insert into cache(
+                symbol,
+                name,
+                holding,
+                purchase_price,
+                purchase_date,
+                bid,
+                offer,
+                change)
+                values(?,?,?,?,?,?,?,?)"""
         stockdb.execute(sql, (self.symbol,
                               self.name,
                               self.holding,
