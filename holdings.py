@@ -93,9 +93,9 @@ class Holdings(object):
                               row[5],
                               row[6])
             holding.name = row[1]
-            holding.bid=row[6]
-            holding.offer=row[7]
-            holding.change=row[8]
+            holding.bid=row[7]
+            holding.offer=row[8]
+            holding.change=row[9]
             self.holdings.append(holding)
 
     #Clear and re-populate cache table
