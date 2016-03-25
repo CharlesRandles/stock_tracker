@@ -191,7 +191,6 @@ class Holding(object):
                  sale_date=None,
                  sale_price=None,
                  id=None):
-        print symbol, holding, purchase_price
         self.symbol=symbol
         self.holding=holding
         self.purchase_price = purchase_price
