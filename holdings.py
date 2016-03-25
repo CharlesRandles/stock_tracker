@@ -73,6 +73,7 @@ class Holdings(object):
     def loadFromCache(self):
         cursor = stockdb.getCursor()
         sql = """select symbol,
+                        name,
                         holding,
                         purchase_price,
                         purchase_date,
@@ -86,14 +87,15 @@ class Holdings(object):
         cursor.execute(sql)
         for row in cursor:
             holding = Holding(row[0],
-                              row[1],
-                              row[2],
+                              row[2], #Skip name for now
                               row[3],
                               row[4],
-                              row[5])
+                              row[5],
+                              row[6])
+            holding.name = row[1]
             holding.bid=row[6]
             holding.offer=row[7]
-            holding.offer=row[8]
+            holding.change=row[8]
             self.holdings.append(holding)
 
     #Clear and re-populate cache table
