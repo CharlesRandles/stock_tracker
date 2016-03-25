@@ -353,7 +353,6 @@ class HoldingSummary(object):
                       <td>{}</td>
                       <td>{}</td>
                       <td>{}</td>
-                      <td>{}</td>
                       <td class="{}">{}</td>
                       <td>{}</td>
                   </tr>\r\n""".format(self.symbol,
