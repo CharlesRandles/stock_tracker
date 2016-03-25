@@ -99,6 +99,15 @@ class TestQuotes(unittest.TestCase):
         self.assertEqual(len(symbols), 1)
         self.assertEqual(quotes[symbols[0]].symbol, symbols[0]) #Should get the symbol we asked for
 
+#Lookup functions
+def checkName(symbol):
+    invalid_names = ['N/A']
+    name = YahooQuotes([symbol]).quotes[symbol].name
+    if name not in invalid_names:
+        return name
+    else:
+        return None
+
 # http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv
 #'http://download.finance.yahoo.com/d/quotes.csv?s=CTN.AX&f=nsl1op&e=.csv'
         

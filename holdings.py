@@ -9,29 +9,16 @@ import datetime
 import YahooFinance
 import configdb
 import stockdb
+import stockutils
 
-DB_FILE="db/holdings.db"
-timeFormat = fmt="%Y-%m-%d %H:%M:%S"
+class HoldingNotFound(Exception):
+    pass
 
 def getHoldings():
     cursor=stockdb.getCursor()
     holdings=Holdings()
     holdings.load()
     return holdings
-
-#Helper for messing with timezones
-def parseOffset(offset):
-    hours = int(offset[0:3])
-    minutes = int(offset[3:])
-    return datetime.timedelta(hours=hours, minutes=minutes)
-
-def toUTC(time, offset):
-    return time - parseOffset(offset)
-
-def nowUTC():
-    offset = configdb.getConfig('server_utcoffset')
-    now_utc=toUTC(datetime.datetime.now(), offset)
-    return now_utc.strftime(timeFormat)
 
 #A list of Holding objects 
 class Holdings(object):
@@ -53,12 +40,12 @@ class Holdings(object):
     #Load all holdings from database
     def loadHoldings(self):
         cursor = stockdb.getCursor()
-        sql = """select symbol, '', holding, purchase_price, purchase_date 
+        sql = """select symbol, holding, purchase_price, purchase_date, sale_price, sale_date
                  from holdings
                  where sale_date is null;"""
         cursor.execute(sql)
         for row in cursor:
-            holding = Holding(row[0], row[1], row[2], row[3], row[4])
+            holding = Holding(row[0], row[1], row[2], row[3], row[4], row[5])
             self.holdings.append(holding)
 
     #Ask Yahoo! for the prices
@@ -78,7 +65,7 @@ class Holdings(object):
         #Record as last reload
         now=datetime.datetime.now()
         self.lastReloadTime = now
-        now_str=now.strftime(timeFormat)
+        now_str=now.strftime(stockutils.timeFormat)
         configdb.setConfig('last_reload', now_str)
         self.writeToCache()
 
@@ -86,10 +73,11 @@ class Holdings(object):
     def loadFromCache(self):
         cursor = stockdb.getCursor()
         sql = """select symbol,
-                        name,
                         holding,
                         purchase_price,
                         purchase_date,
+                        sale_price,
+                        sale_date,
                         bid,
                         offer,
                         change
@@ -102,9 +90,10 @@ class Holdings(object):
                               row[2],
                               row[3],
                               row[4],
-                              row[5],
-                              row[6],
-                              row[7])
+                              row[5])
+            holding.bid=row[6]
+            holding.offer=row[7]
+            holding.offer=row[8]
             self.holdings.append(holding)
 
     #Clear and re-populate cache table
@@ -122,7 +111,7 @@ class Holdings(object):
     def lastReload(self):
         str_time = configdb.getConfig('last_reload')
         #Parse the datetime
-        return datetime.datetime.strptime(str_time, timeFormat)
+        return datetime.datetime.strptime(str_time, stockutils.timeFormat)
 
     #how long should we wait for a reload?
     def minReload(self):
@@ -193,20 +182,74 @@ class Holdings(object):
     
 #A single stock holding
 class Holding(object):
-    def __init__(self, symbol, name, holding, purchase_price, date, bid=None, offer=None, change=None):
+
+    def __init__(self, 
+                 symbol, 
+                 holding, 
+                 purchase_price, 
+                 purchase_date, 
+                 sale_date=None,
+                 sale_price=None,
+                 id=None):
+        print symbol, holding, purchase_price
         self.symbol=symbol
-        self.name = name
         self.holding=holding
         self.purchase_price = purchase_price
-        self.purchase_date = date
-        self.bid=bid
-        self.offer=offer
-        self.change=change
-        
+        self.purchase_date = purchase_date
+        self.sale_price = sale_price
+        self.sale_date = sale_date
+        self.bid = 0.0
+        self.offer = 0.0
+        self.change= 0.0
+        self.id=id
+        self.name="Not loaded"
+
+    @classmethod
+    def findById(cls, key):
+        sql = """
+        select
+        id,
+        symbol,
+        holding,
+        purchase_price,
+        purchase_date,
+        sale_price, 
+        sale_date
+        from holdings
+        where id=?;"""
+        sql="select * from holdings where id=?"
+        cursor = stockdb.getCursor()
+        cursor.execute(sql, (key,)) #The sqlite api interprets 100 as 1,0,0 unless you put this trailing comma on
+        r=cursor.fetchone()
+        if r is not None:
+            return Holding(r[1],r[2],r[3],r[4],r[5],r[6],r[0])
+        else:
+            raise HoldingNotFound("No holding with id {} in database".format(key))
+    
     def save(self):
-        sql = """insert into holdings (symbol, holding, purchase_price, purchase_date)
-                values ('?,?,?,?');"""
-        cursor.execute(sql, ( self.symbol, self.holding, self.purchase_price, self.purchase_date))
+        if self.id is None:
+            sql = """insert into holdings (symbol, holding, 
+            purchase_price, purchase_date, 
+            sale_price, sale_date) 
+            values (?,?,?,?,?,?);"""
+        else:
+            sql = """
+            update holdings set 
+            symbol = ?,
+            holding=?,
+            purchase_price=?,
+            purchase_date=?,
+            sale_price=?,
+            sale_date=?
+            where id = ?
+            """
+        stockdb.execute(sql, (self.symbol,
+                              self.holding, 
+                              self.purchase_price, 
+                              self.purchase_date,
+                              self.sale_price,
+                              self.sale_date,
+                              self.id))
 
     #Write holding as a single record to the cache table
     def cache(self):
@@ -293,7 +336,6 @@ class Holding(object):
 class HoldingSummary(object):
     def __init__(self, h):
         self.symbol=h.symbol
-        self.name=h.name
         self.holding=h.holding
         self.purchase_cost=h.purchaseCost()
         self.value=h.value()
@@ -316,7 +358,6 @@ class HoldingSummary(object):
                       <td class="{}">{}</td>
                       <td>{}</td>
                   </tr>\r\n""".format(self.symbol,
-                                      self.name,
                                       self.holding,
                                       self.purchase_cost,
                                       gainLoss,
@@ -373,11 +414,6 @@ class TestHoldings(unittest.TestCase):
     def setUp(self):
         self.cursor = stockdb.getCursor()
 
-    def testLoadAll(self):
-        holdings = Holdings()
-        holdings.loadHoldings()
-        self.assertEqual(len(holdings), 6)
-
     def testAll(self):
         h=getHoldings()
         print h.toHTML()
@@ -391,20 +427,20 @@ class TestTimeUtils(unittest.TestCase):
         self.assertEqual(serverOffset, '-0800')
 
     def testOffsetParser(self):
-        self.assertEqual(parseOffset('+0100').seconds, 3600)
-        self.assertEqual(parseOffset('-0100').days, -1)
-        self.assertEqual(parseOffset('-0100').seconds, 23 * 3600)
+        self.assertEqual(stockutils.parseOffset('+0100').seconds, 3600)
+        self.assertEqual(stockutils.parseOffset('-0100').days, -1)
+        self.assertEqual(stockutils.parseOffset('-0100').seconds, 23 * 3600)
 
     def testToUTC(self):
         d=datetime.datetime(2015, 02, 25, 17, 00, 00)
-        self.assertEqual(toUTC(d, '+0000'), d)
-        self.assertEqual(toUTC(d, '+0200'), d + datetime.timedelta(hours=-2))
-        self.assertEqual(toUTC(d, '-0200'), d + datetime.timedelta(hours=2))
+        self.assertEqual(stockutils.toUTC(d, '+0000'), d)
+        self.assertEqual(stockutils.toUTC(d, '+0200'), d + datetime.timedelta(hours=-2))
+        self.assertEqual(stockutils.toUTC(d, '-0200'), d + datetime.timedelta(hours=2))
 
 
 class testSummaries(unittest.TestCase):
     def setUp(self):
-        self.new_holding = Holding("AFI.AX", "AFI FPO", 1601, 6.16, "2015-01-02 14:30:00.000")
+        self.new_holding = Holding("AFI.AX", 1601, 6.16, "2015-01-02 14:30:00.000")
         
     def testInit(self):
         s = HoldingSummary(self.new_holding)
