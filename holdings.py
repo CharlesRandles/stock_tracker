@@ -172,7 +172,7 @@ class Holdings(object):
             <th>Held for</th>
             <th>Annualized return</th>
           </tr>
-def           </thead>
+          </thead>
           <tbody>"""
         for sale in self.sales:
             html += """
@@ -347,7 +347,7 @@ class Holding(object):
             raise NotSoldException("{} has not been sold".format(self.symbol))
     
     def profit(self):
-        return self.value() - self.purchaseCost()
+        return self.saleValue() - self.purchaseCost()
 
     def annualizedReturn(self):
         return annualizedReturn(self.purchaseCost(), self.saleValue(), self.holdDuration().days)
