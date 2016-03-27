@@ -347,7 +347,10 @@ class Holding(object):
             raise NotSoldException("{} has not been sold".format(self.symbol))
     
     def profit(self):
-        return self.saleValue() - self.purchaseCost()
+        if self.sold():
+            return self.saleValue() - self.purchaseCost()
+        else:
+            return 0.0
 
     def annualizedReturn(self):
         return annualizedReturn(self.purchaseCost(), self.saleValue(), self.holdDuration().days)
