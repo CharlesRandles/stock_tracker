@@ -36,6 +36,7 @@ class Holdings(object):
             self.loadHoldings()
             self.getPrices()
             self.source = "Yahoo!"
+            self.writeToCache()
         else:
             self.loadFromCache()
             self.source="Cache"
@@ -43,7 +44,7 @@ class Holdings(object):
     #Load all holdings from database
     def loadHoldings(self):
         cursor = stockdb.getCursor()
-        sql = """select symbol, holding, purchase_price, purchase_date, sale_date, sale_price
+        sql = """select symbol, holding, purchase_date, purchase_price, sale_date, sale_price
                  from holdings;"""
         cursor.execute(sql)
         for row in cursor:
@@ -72,7 +73,6 @@ class Holdings(object):
         self.lastReloadTime = now
         now_str=now.strftime(stockutils.timeFormat)
         configdb.setConfig('last_reload', now_str)
-        self.writeToCache()
 
     #Pull holdings and prices from cache table
     def loadFromCache(self):
@@ -80,10 +80,10 @@ class Holdings(object):
         sql = """select symbol,
                         name,
                         holding,
-                        purchase_price,
                         purchase_date,
-                        sale_price,
+                        purchase_price,
                         sale_date,
+                        sale_price,
                         bid,
                         offer,
                         change
@@ -228,8 +228,8 @@ class Holding(object):
     def __init__(self, 
                  symbol, 
                  holding, 
-                 purchase_price, 
                  purchase_date, 
+                 purchase_price, 
                  sale_date=None,
                  sale_price=None,
                  id=None):
