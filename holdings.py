@@ -139,7 +139,7 @@ class Holdings(object):
         return sum([holding.purchaseCost() for holding in self.holdings])
 
     def totalProfit(self):
-        return sum([holding.profit() for holding in self.holdings])
+        return sum([holding.profit() for holding in self.holdings]) + sum([sale.profit() for sale in self.sales])
     
     def dayProfit(self):
         return sum([holding.dayProfit() for holding in self.holdings])
@@ -350,7 +350,7 @@ class Holding(object):
         if self.sold():
             return self.saleValue() - self.purchaseCost()
         else:
-            return 0.0
+            return self.value() - self.purchaseCost()
 
     def annualizedReturn(self):
         return annualizedReturn(self.purchaseCost(), self.saleValue(), self.holdDuration().days)
