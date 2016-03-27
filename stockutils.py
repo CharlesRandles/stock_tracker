@@ -18,6 +18,9 @@ def parseOffset(offset):
 def toUTC(time, offset):
     return time - parseOffset(offset)
 
+def dateFromString(s):
+    return datetime.datetime.strptime(s[0:18], timeFormat)
+    
 def nowUTC():
     offset = configdb.getConfig('server_utcoffset')
     now_utc=toUTC(datetime.datetime.now(), offset)

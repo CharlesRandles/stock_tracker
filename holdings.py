@@ -14,6 +14,8 @@ import stockutils
 class HoldingNotFound(Exception):
     pass
 
+class NotSoldException(Exception):
+    pass
 def getHoldings():
     cursor=stockdb.getCursor()
     holdings=Holdings()
@@ -29,6 +31,7 @@ class Holdings(object):
     #Load holdings from db and get prices from Yahoo!
     def load(self):
         self.holdings=[]
+        self.sales=[]
         if self.shouldReload():
             self.loadHoldings()
             self.getPrices()
@@ -40,14 +43,16 @@ class Holdings(object):
     #Load all holdings from database
     def loadHoldings(self):
         cursor = stockdb.getCursor()
-        sql = """select symbol, holding, purchase_price, purchase_date, sale_price, sale_date
-                 from holdings
-                 where sale_date is null;"""
+        sql = """select symbol, holding, purchase_price, purchase_date, sale_date, sale_price
+                 from holdings;"""
         cursor.execute(sql)
         for row in cursor:
             holding = Holding(row[0], row[1], row[2], row[3], row[4], row[5])
-            self.holdings.append(holding)
-
+            if row[4] is None:
+                self.holdings.append(holding)
+            else:
+                self.sales.append(holding)
+            
     #Ask Yahoo! for the prices
     def getPrices(self):
         quotes = YahooFinance.YahooQuotes(self.allSymbols())
@@ -82,8 +87,7 @@ class Holdings(object):
                         bid,
                         offer,
                         change
-                        from cache
-                        where sale_date is null"""
+                        from cache"""
         cursor.execute(sql)
         for row in cursor:
             holding = Holding(row[0],
@@ -96,13 +100,18 @@ class Holdings(object):
             holding.bid=row[7]
             holding.offer=row[8]
             holding.change=row[9]
-            self.holdings.append(holding)
+            if row[5] is None: #Skip sold shares
+                self.holdings.append(holding)
+            else:
+                self.sales.append(holding)    
 
     #Clear and re-populate cache table
     def writeToCache(self):
         stockdb.executeDirect('delete from cache')
         for holding in self.holdings:
             holding.cache()
+        for sale in self.sales:
+            sale.cache()
     
     #Should we reload yet?
     def shouldReload(self):
@@ -150,6 +159,36 @@ class Holdings(object):
     def __str__(self):
         return self.__unicode__()
 
+    def salesTable(self):
+        html = """
+        <h3>Sales</h3>
+        <table class="holdings">\r\n
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Purchase cost</th>
+            <th>Sale Value</th>
+            <th>Gain/Loss</th>
+            <th>Held for</th>
+            <th>Annualized return</th>
+          </tr>
+def           </thead>
+          <tbody>"""
+        for sale in self.sales:
+            html += """
+            <tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{:.2%}</td></tr>
+            """.format(sale.symbol, 
+                       sale.purchaseCost(), 
+                       sale.saleValue(),
+                       sale.profit(),
+                       sale.holdDuration(),
+                       sale.annualizedReturn())
+            html += """
+            </tbody>
+            </table>
+            """
+        return html
+    
     def toHTML(self):
         html='<table class="holdings">\r\n'
         html+='<thead>'
@@ -172,6 +211,7 @@ class Holdings(object):
             html += holding.toHTML() + '\r\n'
         html += '</tbody>\r\n'
         html+='</table>\r\n'
+        html += self.salesTable()
         html += '<h4>Total cost: ${0}</h4>\r\n'.format(self.totalCost())
         html += '<h4>Total value: ${0}</h4>\r\n'.format(self.totalValue())
         html += '<h3>Growth: {:.02%}</h3>\r\n'.format((self.totalValue()-self.totalCost())/self.totalCost())
@@ -260,15 +300,19 @@ class Holding(object):
                 holding,
                 purchase_price,
                 purchase_date,
+                sale_price,
+                sale_date,
                 bid,
                 offer,
                 change)
-                values(?,?,?,?,?,?,?,?)"""
+                values(?,?,?,?,?,?,?,?,?,?)"""
         stockdb.execute(sql, (self.symbol,
                               self.name,
                               self.holding,
                               self.purchase_price,
                               self.purchase_date,
+                              self.sale_price,
+                              self.sale_date,
                               self.bid,
                               self.offer,
                               self.change))
@@ -287,9 +331,27 @@ class Holding(object):
             price=0.0
         return self.holding * price
 
+    def sold(self):
+        return self.sale_date is not None
+    
+    def holdDuration(self):
+        if self.sold():
+            return stockutils.dateFromString(self.sale_date) - stockutils.dateFromString(self.purchase_date)
+        else:
+            raise NotSoldException("{} has not been sold".format(self.symbol))
+                                   
+    def saleValue(self):
+        if self.sold():
+            return self.sale_price * self.holding
+        else: 
+            raise NotSoldException("{} has not been sold".format(self.symbol))
+    
     def profit(self):
         return self.value() - self.purchaseCost()
 
+    def annualizedReturn(self):
+        return annualizedReturn(self.purchaseCost(), self.saleValue(), self.holdDuration().days)
+    
     def dayProfit(self):
         try:
             change = float(self.change)
@@ -437,6 +499,15 @@ class TestTimeUtils(unittest.TestCase):
         self.assertEqual(stockutils.toUTC(d, '+0200'), d + datetime.timedelta(hours=-2))
         self.assertEqual(stockutils.toUTC(d, '-0200'), d + datetime.timedelta(hours=2))
 
+def annualizedReturn(initialCapital,
+                     finalCapital,
+                     duration): #Duration is in days, 365.25 per year
+    years = duration / 365.25
+    return ((finalCapital/initialCapital) ** (1/years)) - 1.0
+
+#class testAnnualizedReturn(unittest.TestCase):
+#    def testAnnualizedReturn(self):
+#        self.assertEqual(annualizedReturn (100.0, 100.0, 100), 0.0)
 
 class testSummaries(unittest.TestCase):
     def setUp(self):
