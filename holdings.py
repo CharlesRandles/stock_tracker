@@ -178,14 +178,13 @@ class Holdings(object):
           <tbody>"""
         for sale in self.sales:
             html += """
-            <tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{:.2%}</td></tr>
+            <tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{:.2%}</td></tr>
             """.format(sale.symbol, 
                        sale.purchaseCost(), 
                        sale.saleValue(),
                        sale.profit(),
                        stockutils.toDDMMYYYY(sale.purchase_date),
                        stockutils.toDDMMYYYY(sale.sale_date),
-                       sale.holdDuration(),
                        sale.annualizedReturn())
             html += """
             </tbody>
