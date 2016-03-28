@@ -171,7 +171,6 @@ class Holdings(object):
             <th>Gain/Loss</th>
             <th>Purchase date</th>
             <th>Sale Date</th>
-            <th>Held for</th>
             <th>Annualized return</th>
           </tr>
           </thead>
