@@ -20,7 +20,11 @@ def toUTC(time, offset):
 
 def dateFromString(s):
     return datetime.datetime.strptime(s[0:18], timeFormat)
-    
+
+def toDDMMYYYY(s):
+    fmt="%d/%m/%Y"
+    return datetime.datetime.strftime(dateFromString (s), fmt)
+
 def nowUTC():
     offset = configdb.getConfig('server_utcoffset')
     now_utc=toUTC(datetime.datetime.now(), offset)
