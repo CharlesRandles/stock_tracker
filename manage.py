@@ -37,8 +37,7 @@ def buy(*args):
                                                    symbol,
                                                    name,
                                                    purchase_price)):
-        newHolding = holdings.Holding(symbol=symbol, 
-                                    name=name, 
+        newHolding = holdings.Holding(symbol=symbol,
                                     holding=qty, 
                                     purchase_price=purchase_price, 
                                     purchase_date=purchase_date)
