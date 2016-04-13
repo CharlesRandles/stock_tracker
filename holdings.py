@@ -275,6 +275,12 @@ class Holding(object):
             purchase_price, purchase_date, 
             sale_price, sale_date) 
             values (?,?,?,?,?,?);"""
+            stockdb.execute(sql, (self.symbol,
+                                  self.holding, 
+                                  self.purchase_price, 
+                                  self.purchase_date,
+                                  self.sale_price,
+                                  self.sale_date))
         else:
             sql = """
             update holdings set 
@@ -286,13 +292,13 @@ class Holding(object):
             sale_date=?
             where id = ?
             """
-        stockdb.execute(sql, (self.symbol,
-                              self.holding, 
-                              self.purchase_price, 
-                              self.purchase_date,
-                              self.sale_price,
-                              self.sale_date,
-                              self.id))
+            stockdb.execute(sql, (self.symbol,
+                                  self.holding, 
+                                  self.purchase_price, 
+                                  self.purchase_date,
+                                  self.sale_price,
+                                  self.sale_date,
+                                  self.id))
 
     #Write holding as a single record to the cache table
     def cache(self):
