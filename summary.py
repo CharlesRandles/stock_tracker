@@ -26,6 +26,7 @@ def groupSummary():
        sum(holding * purchase_price) as paid,
        sum(offer * holding) as value
        from cache
+       where sale_date is null
        group by symbol
        order by symbol;"""
     s="<p><table>"
