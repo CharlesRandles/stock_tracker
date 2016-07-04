@@ -31,7 +31,7 @@ def groupSummary():
     cursor = stockdb.getCursor()
     cursor.execute(sql,())
     for r in cursor:
-        s += "<tr>{}<td>{}</td><td>{}</td><td>{}</td></tr>".format(r[0], r[1], r[2], r[3])
+        s += "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(r[0], r[1], r[2], r[3])
     s += "</table>/p>"
     return s
        
