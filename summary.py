@@ -6,6 +6,7 @@ import holdings
 import unittest
 import configdb
 import html
+import stockdb
 
 cgitb.enable()
 
@@ -17,6 +18,23 @@ def refresh_form():
     </form>
     """
     return f
+
+def groupSummary():
+    sql= """select symbol, 
+       sum(holding), 
+       sum(holding * purchase_price) as paid,
+       sum(offer * holding) as value
+       from cache
+       group by symbol
+       order by symbol;"""
+    s="<p><table>"
+    cursor = stockdb.getCursor()
+    cursor.execute(sql,())
+    for r in cursor:
+        s += "<tr>{}<td>{}</td><td>{}</td><td>{}</td></tr>".format(r[0], r[1], r[2], r[3])
+    s += "</table>/p>"
+    return s
+       
 
 def body():
     stocks=holdings.PortfolioSummary(holdings.getHoldings())
@@ -30,6 +48,7 @@ def body():
 </html>
     """.format(stocks.toHTML(),
                       refresh_form())
+    b += groupSummary()
     return b
 
 def page():
@@ -39,7 +58,3 @@ def page():
  
 #Generate html
 print page()
-
-
-
-
