@@ -20,7 +20,8 @@ def refresh_form():
     return f
 
 def groupSummary():
-    sql= """select symbol, 
+    sql= """select 
+       symbol, 
        sum(holding), 
        sum(holding * purchase_price) as paid,
        sum(offer * holding) as value
@@ -31,8 +32,14 @@ def groupSummary():
     cursor = stockdb.getCursor()
     cursor.execute(sql,())
     for r in cursor:
-        s += "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(r[0], r[1], r[2], r[3])
-    s += "</table>/p>"
+        colour = "loss"
+        try:
+            if float(r[3]) > float(r[2]):
+                colour = "gain"
+        except ValueError:
+            pass
+        s += "<tr><td class={}>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(colour, r[0], r[1], r[2], r[3])
+    s += "</table></p>"
     return s
        
 
