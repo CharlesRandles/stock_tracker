@@ -33,13 +33,16 @@ def groupSummary():
     cursor = stockdb.getCursor()
     cursor.execute(sql,())
     for r in cursor:
+        cost = float(r[2])
+        value = float(r[3])
+        pct_change = ((value - cost) / cost)
         colour = "loss"
         try:
-            if float(r[3]) > float(r[2]):
+            if value > cost:
                 colour = "gain"
         except ValueError:
             pass
-        s += "<tr><td class={}>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(colour, r[0], r[1], r[2], r[3])
+        s += "<tr><td class={}>{}</td><td>{}</td><td>{}</td><td>{}</td></tr><td>{:.2%}</td></tr>".format(colour, r[0], r[1], cost, value , pct_change)
     s += "</table></p>"
     return s
        
