@@ -42,7 +42,7 @@ def groupSummary():
                 colour = "gain"
         except ValueError:
             pass
-        s += "<tr><td class={}>{}</td><td>{}</td><td>{}</td><td>{}</td></tr><td>{:.2%}</td></tr>".format(colour, r[0], r[1], cost, value , pct_change)
+        s += "<tr><td class={}>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{:.2%}</td></tr>".format(colour, r[0], r[1], cost, value , pct_change)
     s += "</table></p>"
     return s
        
