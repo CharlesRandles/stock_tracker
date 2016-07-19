@@ -29,7 +29,7 @@ def groupSummary():
        where sale_date is null
        group by symbol
        order by symbol;"""
-    s="<p><table><thead><th>Symbol</th><th>Purchase Cost</th><th>Value</th><th>Gain</th></thead>"
+    s="<p><table><thead><th>Symbol</th><th>Holding</th><th>Purchase Cost</th><th>Value</th><th>Gain</th></thead>"
     cursor = stockdb.getCursor()
     cursor.execute(sql,())
     for r in cursor:
