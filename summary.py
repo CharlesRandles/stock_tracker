@@ -29,7 +29,7 @@ def groupSummary():
        where sale_date is null
        group by symbol
        order by symbol;"""
-    s="<p><table>"
+    s="<p><table><thead><th>Symbol</th><th>Purchase Cost</th><th>Value</th><th>% Gain</th></thead>"
     cursor = stockdb.getCursor()
     cursor.execute(sql,())
     for r in cursor:
@@ -57,9 +57,8 @@ def body():
         <a href="stocks.py">Full Report</a>
     </body>
 </html>
-    """.format(stocks.toHTML(),
+    """.format(groupSummary()),
                       refresh_form())
-    b += groupSummary()
     return b
 
 def page():
