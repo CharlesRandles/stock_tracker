@@ -4,6 +4,8 @@
 Database accessors for grabbing current holdings
 """
 
+from __future__ import division
+
 import unittest
 import datetime
 import YahooFinance
