@@ -103,7 +103,7 @@ def usage():
     usageStr += "\twhere cmd is [show|buy|sell|unsell|delete]\n"
     usageStr += "\tmanage show\n"
     usageStr += "\tmanage buy {symbol} {quantity} {price}\n"
-    usageStr += "\tmanage sell {id}\n"
+    usageStr += "\tmanage sell {id} {price}\n"
     usageStr += "\tmanage unsell {id}\n"
     usageStr += "\tmanage delete {id}\n"
     print(usageStr)
