@@ -513,6 +513,9 @@ class TestTimeUtils(unittest.TestCase):
 def annualizedReturn(initialCapital,
                      finalCapital,
                      duration): #Duration is in days, 365.25 per year
+    if initialCapital == 0:
+        #FIXME - this needs a group by in the select. What's the annualized return on a dividend payment?
+        return 0.0
     years = duration / 365.25
     return ((finalCapital/initialCapital) ** (1/years)) - 1.0
 
