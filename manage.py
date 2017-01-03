@@ -45,6 +45,9 @@ def buy(*args):
         show(*args)
 
 def sell(*args):
+    #BREAKS HOLDINGS TABLE DO NOT USE
+    print("NOT WORKING - swaps purchase_date and purchase_price.")
+    return
     print "sell: {}".format(*args)
     key = args[0][0]
     price = args[0][1]
