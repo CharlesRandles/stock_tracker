@@ -175,8 +175,8 @@ class Holdings(object):
             <th>Sale Date</th>
             <th>Annualized return</th>
           </tr>
-          </thead>
-          <tbody>"""
+        </thead>
+        <tbody>"""
         for sale in self.sales:
             html += """
             <tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{:.2%}</td></tr>
@@ -187,10 +187,10 @@ class Holdings(object):
                        stockutils.toDDMMYYYY(sale.purchase_date),
                        stockutils.toDDMMYYYY(sale.sale_date),
                        sale.annualizedReturn())
-            html += """
-            </tbody>
-            </table>
-            """
+        html += """
+        </tbody>
+        </table>
+        """
         return html
     
     def toHTML(self):
