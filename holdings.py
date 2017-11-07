@@ -44,7 +44,7 @@ class Holdings(object):
             self.writeToCache()
         else:
             self.loadFromCache()
-            self.source="Cache"
+            self.source="Cache: recovered at {} servertime".format(str(self.lastReload()))
     
     #Load all holdings from database
     def loadHoldings(self):
