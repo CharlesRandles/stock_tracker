@@ -58,7 +58,14 @@ class Holdings(object):
                 self.holdings.append(holding)
             else:
                 self.sales.append(holding)
-            
+
+    def saveReloadTime(self):
+        #Record time of reload in config table
+        now=datetime.datetime.now()
+        self.lastReloadTime = now
+        now_str=now.strftime(stockutils.timeFormat)
+        configdb.setConfig('last_reload', now_str)
+        
     #Ask Yahoo! for the prices
     def getPricesYahoo(self):
         quotes = YahooFinance.YahooQuotes(self.allSymbols())
@@ -73,12 +80,8 @@ class Holdings(object):
                 holding.offer = 0.0
                 holding.bid = 0.0
                 holding.change = 0.0
-        #Record as last reload
-        now=datetime.datetime.now()
-        self.lastReloadTime = now
-        now_str=now.strftime(stockutils.timeFormat)
-        configdb.setConfig('last_reload', now_str)
-
+        self.saveReloadTime()
+        
     def getPricesASX(self):
         for holding in self.holdings:
             try:
@@ -90,7 +93,8 @@ class Holdings(object):
                 holding.change=quote.change_price
             except Exception as e:
                 raise
-
+        self.saveReloadTime()
+        
     #Pull holdings and prices from cache table
     def loadFromCache(self):
         cursor = stockdb.getCursor()
