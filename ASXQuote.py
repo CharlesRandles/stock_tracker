@@ -1,19 +1,25 @@
 #!/usr/bin/python
 
 import httpproxy
+import urllib2
 import json
 
-host='isaproxy'
-port=89
-user='U335449'
+USEPROXY=False
+if USEPROXY:
+    host='isaproxy'
+    port=89
+    user='######'
+    #This caches the proxy data with the users password
+    httplib==httpproxy.HTTPProxy(host, port, user).getUrlLib()
+else:
+    httplib=urllib2
 
+"""
 quote='{"data":[{"code":"SUN","close_date":"2017-11-06T00:00:00+1100","close_price":13.88,"change_price":0.02,"volume":1620108,"day_high_price":13.94,"day_low_price":13.82,"change_in_percent":"0.144%"}]}'
-
-#This caches the proxy data with the users password
-proxyLib=httpproxy.HTTPProxy(host, port, user).getUrlLib()
+"""
 
 class Quote:
-    def __init__(self, symbol, lib=proxyLib):
+    def __init__(self, symbol, lib=httplib):
         self.symbol=symbol
         self.lib=lib
         self.priceData=None

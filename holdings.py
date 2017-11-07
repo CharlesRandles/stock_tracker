@@ -9,9 +9,12 @@ from __future__ import division
 import unittest
 import datetime
 import YahooFinance
+import ASXQuote
 import configdb
 import stockdb
 import stockutils
+
+QUOTE_SOURCE='ASX'
 
 class HoldingNotFound(Exception):
     pass
@@ -36,8 +39,8 @@ class Holdings(object):
         self.sales=[]
         if self.shouldReload():
             self.loadHoldings()
-            self.getPrices()
-            self.source = "Yahoo!"
+            self.getPricesASX()
+            self.source = QUOTE_SOURCE
             self.writeToCache()
         else:
             self.loadFromCache()
@@ -57,7 +60,7 @@ class Holdings(object):
                 self.sales.append(holding)
             
     #Ask Yahoo! for the prices
-    def getPrices(self):
+    def getPricesYahoo(self):
         quotes = YahooFinance.YahooQuotes(self.allSymbols())
         for holding in self.holdings:
             try:
@@ -75,6 +78,18 @@ class Holdings(object):
         self.lastReloadTime = now
         now_str=now.strftime(stockutils.timeFormat)
         configdb.setConfig('last_reload', now_str)
+
+    def getPricesASX(self):
+        for holding in self.holdings:
+            try:
+                symbol=holding.symbol.split('.')[0]
+                quote=ASXQuote.Quote(symbol)
+                holding.name=holding.symbol
+                holding.offer=quote.close_price
+                holding.bid=quote.close_price
+                holding.change=quote.change_price
+            except Exception as e:
+                raise
 
     #Pull holdings and prices from cache table
     def loadFromCache(self):

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import stockquote
+import ASXQuote
 
 stocks=['AFI',
         'ARG',
@@ -19,5 +19,5 @@ stocks=['AFI',
         'YBR']
 
 for stock in stocks:
-    q=stockquote.Quote(stock)
+    q=ASXQuote.Quote(stock)
     print(str(q))
