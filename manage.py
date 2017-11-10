@@ -7,7 +7,7 @@ import sys
 import stockdb
 import stockutils
 import holdings
-import YahooFinance
+#import YahooFinance
 
 class UnknownCommand(Exception):
     pass
@@ -25,11 +25,12 @@ def show(*args):
                                       row[3]))
 def buy(*args):
     symbol = args[0][0]
-    print("Looking up {}...".format(symbol)) 
-    name = YahooFinance.checkName(symbol)
-    if name == None:
-        print("{} is not a valid stock symbol".format(symbol))
-        return
+    name = symbol #TODO - can we look this up somewhere else now the Yahoo API is gone?
+    #print("Looking up {}...".format(symbol)) 
+    #name = YahooFinance.checkName(symbol)
+    #if name == None:
+    #    print("{} is not a valid stock symbol".format(symbol))
+    $    return
     qty = args[0][1]
     purchase_price = args[0][2]
     purchase_date = stockutils.nowUTC()
