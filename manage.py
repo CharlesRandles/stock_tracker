@@ -30,7 +30,7 @@ def buy(*args):
     #name = YahooFinance.checkName(symbol)
     #if name == None:
     #    print("{} is not a valid stock symbol".format(symbol))
-    $    return
+    #    return
     qty = args[0][1]
     purchase_price = args[0][2]
     purchase_date = stockutils.nowUTC()
