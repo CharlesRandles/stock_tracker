@@ -3,6 +3,8 @@
 import httpproxy
 import urllib2
 import json
+import httplib
+import asxhttp
 
 USEPROXY=False
 if USEPROXY:
@@ -28,6 +30,12 @@ class Quote:
 
     """This is the service-specific bit"""
     def _getPrice(self):
+        data=asxhttp.getStock(self.symbol)
+        self.close_price=data
+        self.change_price=0.0
+        
+    #_getPrice_JSON worked with the old, undocumented data feed from ASK
+    def _getPrice_JSON(self):
         if not self.retrieved:
             url='http://data.asx.com.au/data/1/share/{}/prices?interval=daily&count=1'.format(self.symbol)
             try:
@@ -54,4 +62,3 @@ class Quote:
 
         return s
 
-        
