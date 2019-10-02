@@ -72,4 +72,4 @@ def page():
 ########## End HTML Generation ###############
  
 #Generate html
-print page()
+print(page())
