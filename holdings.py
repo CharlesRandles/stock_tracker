@@ -508,7 +508,7 @@ class TestHoldings(unittest.TestCase):
 
     def testAll(self):
         h=getHoldings()
-        print h.toHTML()
+        print(h.toHTML())
         
     def tearDown(self):
         pass
