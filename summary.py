@@ -40,7 +40,7 @@ def groupSummary():
         except TypeError:
             cost=r[2]
             value=r[3]
-            pct_change="Error."
+            pct_change=0.00
         colour = "loss"
         try:
             if value > cost:
