@@ -21,6 +21,8 @@ quote='{"data":[{"code":"SUN","close_date":"2017-11-06T00:00:00+1100","close_pri
 """
 
 class Quote:
+    cache = {}
+    
     def __init__(self, symbol, lib=httplib):
         self.symbol=symbol
         self.lib=lib
@@ -30,8 +32,14 @@ class Quote:
 
     """This is the service-specific bit"""
     def _getPrice(self):
-        data=asxhttp.getStock(self.symbol)
-        self.close_price=data
+        if Quote.cache.has_key(self.symbol):
+            self.close_price = Quote.cache[self.symbol]
+            #print("Retreived {}:{} from cache".format(self.symbol, self.close_price))
+        else:
+            price=asxhttp.getStock(self.symbol)
+            self.close_price=price
+            Quote.cache[self.symbol]=self.close_price
+            #print("Retreived {}:{} from ASX".format(self.symbol, self.close_price))
         self.change_price=0.0
         
     #_getPrice_JSON worked with the old, undocumented data feed from ASK
